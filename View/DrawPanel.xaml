@@ -1,0 +1,85 @@
+﻿<UserControl
+    x:Class="App2.View.DrawPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App2.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:App2.Model"
+    mc:Ignorable="d" >
+    <UserControl.Resources>
+        <Style TargetType="ItemsControl">
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+            <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+        </Style>
+        <Style TargetType="Canvas">
+            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+            <Setter Property="VerticalAlignment" Value="Top"></Setter>
+        </Style>
+    </UserControl.Resources >
+    <Grid x:Name="ROOT"  Background="Transparent"
+           ManipulationMode="All" 
+          PointerWheelChanged="ROOT_PointerWheelChanged" 
+          PointerEntered="OnEnter"
+          PointerExited="OnExited" 
+          PointerCaptureLost="OnExited"
+          PointerMoved="OnMoved"   
+          ManipulationDelta="OnDragDraw" 
+          >
+        <Canvas x:Name="CANVAS" > 
+
+            <ItemsControl x:Name="LAYS" ItemsSource="{x:Bind Layers,Mode=OneWay}"   >
+                <ItemsControl.RenderTransform>
+                    <CompositeTransform></CompositeTransform>
+                </ItemsControl.RenderTransform>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate   >
+                        <Canvas Width="1" Height="1" UseLayoutRounding="False" >
+                            <!--- 绝对定位  -->
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="model:LayerModel">
+                        <!-- 这里x:bind不知道为啥有时候会闪退-->
+                        <Border Visibility="{Binding Visible,Mode=OneWay}"
+                                    Opacity="{Binding Opacity,Mode=OneWay}"   
+                                    MinWidth="{Binding W}"
+                                    MinHeight="{Binding H}"  
+                                    UseLayoutRounding="False" 
+                                    RenderTransformOrigin="0.5,0.5"
+                                    RenderTransform="{Binding RenderTransform}"
+                             >
+                            <!-- BorderBrush="Aqua" BorderThickness="0.05"     
+                            
+                               Width="{Binding ElementName=DRAW,Path=Width}"
+                               Height="{Binding ElementName=DRAW,Path=Height}"
+                            -->
+                            <Border.Background>
+                                <ImageBrush  ImageSource="{Binding Bitmap}" Stretch="None" 
+                                 AlignmentX="Left" AlignmentY="Top"
+                                 ></ImageBrush>
+                            </Border.Background>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+
+                <Border Width="100" Height="150" RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <CompositeTransform Rotation="20" ScaleX="0.5" ScaleY="0.5"/>
+                    </Border.RenderTransform>
+                    <Border.Background>
+                        <ImageBrush ImageSource="ms-appx:///Assets/dh.jpg"></ImageBrush>
+                    </Border.Background>
+                </Border>
+
+            </ItemsControl>
+            <Border x:Name="GRAPHIC" >
+
+            </Border>
+ 
+        </Canvas>
+    </Grid>
+</UserControl>

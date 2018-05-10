@@ -1,0 +1,48 @@
+﻿<Page
+    x:Class="App2.View.LayerPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" 
+    d:DesignWidth="190">
+    <Page.Resources>
+        <Flyout x:Name="MENU">
+            <Slider x:Name="SLIDER" Width="200" Maximum="1" Value="{Binding Opacity,Mode=TwoWay}" StepFrequency="0.01" >
+                <Slider.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock x:Uid="v_l_opacity" FontSize="12" Text="透明度" FontFamily="Segoe UI"></TextBlock>
+                    </DataTemplate>
+                </Slider.HeaderTemplate>
+            </Slider>
+        </Flyout>
+    </Page.Resources>
+
+    <VariableSizedWrapGrid Orientation="Horizontal" >
+        <GridViewItem >
+            <BitmapIcon  PointerReleased="OnNew" UriSource="ms-appx:///Assets/AppBar/new.png" ></BitmapIcon>
+        </GridViewItem>
+        <GridViewItem  >
+            <BitmapIcon PointerReleased="OnDel" UriSource="{Binding Icon,FallbackValue=ms-appx:///Assets/AppBar/delete.png}" ></BitmapIcon>
+        </GridViewItem>
+      
+        <GridViewItem >
+            <FontIcon   PointerReleased="OnUp" Glyph="▲" FontFamily="Arial Black"  ></FontIcon>
+        </GridViewItem>
+        <GridViewItem>
+            <FontIcon   PointerReleased="OnDown" Glyph="▼" FontFamily="Arial Black"  ></FontIcon>
+        </GridViewItem>
+        <GridViewItem>
+            <BitmapIcon PointerReleased="OnCopy"   UriSource="{Binding Icon,FallbackValue=ms-appx:///Assets/AppBar/copy.png}" ></BitmapIcon>
+        </GridViewItem>
+        <GridViewItem>
+            <BitmapIcon PointerReleased="OnExp" UriSource="{Binding Icon,FallbackValue=ms-appx:///Assets/AppBar/addext.png}" ></BitmapIcon>
+        </GridViewItem>
+        <GridViewItem>
+            <BitmapIcon FlyoutBase.AttachedFlyout="{StaticResource MENU}"  Tapped="Grid_Tapped"  UriSource="ms-appx:///Assets/AppBar/opacity.png"></BitmapIcon>
+        </GridViewItem>
+        <!--- <GridViewItem>
+            <SymbolIcon Symbol="ClosedCaption"></SymbolIcon>
+        </GridViewItem>-->
+    </VariableSizedWrapGrid>
+</Page>

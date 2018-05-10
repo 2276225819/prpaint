@@ -1,0 +1,173 @@
+﻿<Page xmlns:my="using:Windows.UI.Xaml.Controls.Maps" 
+    x:Class="App2.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App2" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:view="using:App2.View" 
+    xmlns:model="using:App2.Model"
+    mc:Ignorable="d"   Background="#FFAAAAAA"  >
+    <Page.Resources>
+        <model:VModel x:Name="vm" ></model:VModel>
+        <local:DD x:Key="dd"></local:DD>
+        <local:CC x:Key="cc"></local:CC>
+        <local:BB x:Key="bb"></local:BB>
+    </Page.Resources>
+    <Grid > 
+        <view:DrawPanel x:Name="DRAW" DrawMode="{x:Bind vm.DrawType,Mode=OneWay}" 
+                        Layers="{x:Bind vm.LayerList,Mode=OneWay}"
+                        DrawRect="{x:Bind vm.DrawRect,Mode=OneWay}"
+                        Appbar="{x:Bind Cmd}"
+                        Clipper="{x:Bind vm.Clipper}"
+                        OnChangeTools="{x:Bind vm.OnChangeTools}" 
+                        ></view:DrawPanel>
+
+        <ProgressBar VerticalAlignment="Top"  Name="DB" Margin="0,-24,0,0" Height="24" Value="60" Foreground="#4CFFFFFF" ></ProgressBar>
+        <TextBlock Name="DEBUG" HorizontalAlignment="Center" VerticalAlignment="Top"
+                   IsHitTestVisible="False"  
+                   FontSize="12" Text="DEBUG" >
+            <TextBlock.RenderTransform>
+                <TranslateTransform Y="-20"></TranslateTransform>
+            </TextBlock.RenderTransform>
+        </TextBlock>
+
+
+
+        <SplitView Name="SR" HorizontalAlignment="Right"  OpenPaneLength="240"  PanePlacement="Right" IsPaneOpen="{x:Bind Cmd.IsOpen,Mode=OneWay}" >
+            <SplitView.Pane>
+                <Pivot Name="PIVOT">
+                    <!--   Margin="-24" Padding="24" 
+                        Margin="0,-16,0,0" <PivotItem x:Uid="p_menu" Header="Menu">
+                        <StackPanel Margin="15,0" >
+                            <TextBox Text="{x:Bind vm.FileName,Mode=TwoWay}" IsReadOnly="True" SelectionHighlightColor="{x:Null}" Foreground="{x:Null}"   BorderBrush="{x:Null}"  Background="{x:Null}"  ></TextBox>
+                            <VariableSizedWrapGrid Orientation="Horizontal"  Background="#1000" Margin="0,0,0,10" >
+                                <VariableSizedWrapGrid.Resources>
+                                    <Style TargetType="AppBarButton">
+                                        <Setter Property="Margin" Value="1"></Setter>
+                                        <Setter Property="Width" Value="100"></Setter>
+                                    </Style>
+                                </VariableSizedWrapGrid.Resources>
+                                <AppBarButton x:Uid="p_m_new" Label="New" Icon="Copy" Tapped="OnCreate"></AppBarButton>
+                                <AppBarButton x:Uid="p_m_save" Label="Save"  Icon="Save" Tapped="OnSave" ></AppBarButton>
+                                <AppBarButton x:Uid="p_m_import" Label="Import" Icon="ClearSelection" Tapped="OnImport"></AppBarButton>
+                                <AppBarButton x:Uid="p_m_export" Label="Export" Icon="ReShare" Tapped="OnExport"></AppBarButton>
+                                <AppBarButton x:Uid="p_m_like" Label="Like" Icon="Emoji2" Tapped="OnFeedback"></AppBarButton>
+                                <AppBarButton x:Uid="p_m_exit" Label="exit" Icon="Stop" Tapped="OnExit"></AppBarButton>
+                            </VariableSizedWrapGrid>
+                           
+                        </StackPanel>
+                    </PivotItem>-->
+                    <PivotItem x:Uid="p_color" Header="Color">
+                        <Grid Margin="25,0">
+                            <view:ColorRing MainBrush="{x:Bind vm.MainBrush}"
+                                        VerticalAlignment="Top" />
+                            <view:ColorList  Margin="0,200,0,0"
+                                        MainBrush="{x:Bind vm.MainBrush}"
+                                        BackBrush="{x:Bind vm.BackBrush}"
+                                        Items="{x:Bind vm.ColorList}" 
+                                        VerticalAlignment="Top"    />
+
+                        </Grid>
+                    </PivotItem>
+                    <PivotItem x:Uid="p_tools" Header="Tools">
+                        <ScrollViewer>
+                            <StackPanel Margin="25,0">
+                                <!--- -->
+                                <view:ToolsList x:Name="TOOLS"  Margin="0,0,0,20" 
+                                                Clipper="{x:Bind vm.Clipper}"
+                                                Items="{x:Bind vm.ToolsList}"  ></view:ToolsList>
+
+                                <view:ToolsAttr Items="{x:Bind vm.ToolsList}" ScaleObj="{x:Bind DRAW}" x:Name="DF"
+                                                Clipper="{x:Bind vm.Clipper}"  ></view:ToolsAttr>
+                                <!--  Definition  -->
+                            </StackPanel>
+                        </ScrollViewer>
+                    </PivotItem>
+                    <PivotItem x:Uid="p_layer" Header="Layer">
+                        <Grid>
+                            <view:LayerPanel   Margin="25,0"
+                                     Items="{x:Bind vm.LayerList,Mode=OneWay}" ></view:LayerPanel>
+                            <view:LayerList x:Name="Layers" Margin="0,100,0,0" 
+                                    Items="{x:Bind vm.LayerList,Mode=OneWay}"  />
+                        </Grid>
+                    </PivotItem>
+                </Pivot>
+            </SplitView.Pane>
+        </SplitView>
+        <SplitView Name="SL" HorizontalAlignment="Left" OpenPaneLength="60"  PanePlacement="Left" IsPaneOpen="{x:Bind Cmd.IsOpen,Mode=OneWay}" >
+            <SplitView.Pane>
+                <Grid Background="{x:Bind PIVOT.Background,Mode=OneWay}">
+                    <ScrollViewer  HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+                        <StackPanel >
+                            <AppBarButton x:Uid="p_m_new" Label="New" Icon="Copy" Tapped="OnCreate"></AppBarButton>
+                            <AppBarButton x:Uid="p_m_save" Label="Save"  Icon="Save" Tapped="OnSave" ></AppBarButton>
+                            <AppBarButton x:Uid="p_m_import" Label="Import" Tapped="OnImport">
+                                <AppBarButton.Icon>
+                                    <BitmapIcon UriSource="ms-appx:///Assets/AppBar/import.png"></BitmapIcon>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                            <AppBarButton x:Uid="p_m_export" Label="Export"  Tapped="OnExport">
+                                <AppBarButton.Icon>
+                                    <BitmapIcon UriSource="ms-appx:///Assets/AppBar/export.png"></BitmapIcon>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                            <AppBarButton x:Uid="p_m_setting" Label="Setting" Icon="Setting" Tapped="OnSetting"></AppBarButton>
+                            <AppBarButton x:Uid="p_m_like" Label="Like" Icon="Emoji2" Tapped="OnFeedback"></AppBarButton>
+
+                            <AppBarButton x:Uid="p_m_pin" Name="Pin" Label="pin" Icon="Pin" Tapped="OnPin"></AppBarButton>
+                            <AppBarButton x:Uid="p_m_exit" Name="Exit" Label="exit" Icon="Stop" Tapped="OnExit"></AppBarButton>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </SplitView.Pane>
+        </SplitView>
+        <AppBar ClosedDisplayMode="Compact" IsSticky="True" Name="Cmd" >
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
+                    <AppBarButton x:Uid="c_undo" Label="undo" Icon="Undo" Click="BarUndo_Tapped" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"   />
+                    <AppBarButton x:Uid="c_redo" Label="redo" Icon="Redo" Click="BarRedo_Tapped" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"  />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                    <AppBarButton Label="{x:Bind vm.MainBrush.Color,Mode=OneWay,Converter={StaticResource cc}}" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"
+                              Tapped="{x:Bind vm.OnChangeColor}" >
+                        <Grid Width="20" Height="20"  >
+                            <Rectangle Width="16" Height="16" Fill="{x:Bind vm.BackBrush}" HorizontalAlignment="Left" VerticalAlignment="Top"></Rectangle>
+                            <Rectangle Width="16" Height="16" Fill="{x:Bind vm.MainBrush}" HorizontalAlignment="Right" VerticalAlignment="Bottom"></Rectangle>
+                        </Grid>
+                    </AppBarButton>
+                    <AppBarButton Label="{x:Bind vm.CurrentTools.Name,Mode=OneWay}" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"
+                              Tapped="{x:Bind vm.OnChangeTools}"  >
+                        <Grid Width="20" Height="20" >
+                            <BitmapIcon  UriSource="{x:Bind vm.CurrentTools.Icon,Mode=OneWay}"  Width="40" Height="40"
+                                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-10"  />
+                            <Border   Background="{x:Bind Cmd.Background,Mode=OneWay}"  
+                                CornerRadius="99,99,99,99" 
+                                Width="16" Height="16" Margin="-8" HorizontalAlignment="Left" VerticalAlignment="Top" >
+
+                                <BitmapIcon  UriSource="{x:Bind vm.LastTools.Icon,Mode=OneWay}" />
+                            </Border>
+                        </Grid>
+                    </AppBarButton>
+                    <AppBarButton  Label="off" Icon="Switch" Tapped="{x:Bind BarLayer_Tapped}" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}" ></AppBarButton>
+
+                </StackPanel>
+            </Grid>
+        </AppBar>
+        <!---  <ProgressBar IsIndeterminate="True" Visibility="{x:Bind vm.
+        ,Mode=OneWay,Converter={StaticResource bb}}"
+                     VerticalAlignment="Top"
+                     RenderTransformOrigin="0.5,0.5"
+                     Margin="90,3,91,0"  >
+            <ProgressBar.RenderTransform>
+                <CompositeTransform ScaleX="2" ScaleY="2"/>
+            </ProgressBar.RenderTransform>
+IsActive
+        </ProgressBar>
+        <Button Click="Button_Click" HorizontalAlignment="Center" Width="100" Height="100"></Button>-->
+        <Grid  Visibility="{x:Bind vm.Loading,Mode=OneWay,Converter={StaticResource bb}}" Background="#33000000">
+            <ProgressRing IsActive="True" Width="60" Height="60"  />
+        </Grid>
+
+    </Grid>
+</Page>

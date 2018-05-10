@@ -1,0 +1,52 @@
+﻿<UserControl
+    x:Class="App2.View.ToolsList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App2.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" 
+    d:DesignWidth="190" Loading="UserControl_Loading"> 
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+
+        <GridView x:Name="A" SelectionChanged="SelectionChanged" ItemsSource="{x:Bind Extends}" Padding="0,0,0,0"  Grid.Row="0"   >
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <ItemsControl >
+                        <BitmapIcon  UriSource="{Binding Icon,FallbackValue=ms-appx:///Assets/AppBar/edit.png}" ></BitmapIcon>
+                    </ItemsControl>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+        </GridView>
+        <GridView x:Name="B" SelectionChanged="SelectionChanged" ItemsSource="{x:Bind Items}" Grid.Row="1">
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="40" Height="40" >
+                        <BitmapIcon Height="30" Width="30"    VerticalAlignment="Top" UriSource="{Binding Icon,FallbackValue=ms-appx:///Assets/AppBar/edit.png}"></BitmapIcon>
+                        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="{Binding Name,Mode=TwoWay,FallbackValue=xxxx}"></TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+            <Grid></Grid>
+        </GridView>
+
+    </Grid>
+</UserControl>
