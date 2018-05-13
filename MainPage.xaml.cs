@@ -30,6 +30,7 @@ using Windows.System;
 using Windows.UI.Composition;
 using System.Numerics;
 using App1.View;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace App2
 {
@@ -143,12 +144,13 @@ namespace App2
                 if ((s as VModel).BarPosition == true)
                 {
                     Cmd.VerticalAlignment = VerticalAlignment.Top;
-                    SL.Margin = SR.Margin = new Thickness(0, 60, 0, 0);
+                    SL.Margin = SR.Margin = DRAW.Margin = new Thickness(0, 60, 0, 0);
+                    
                 }
                 else
                 {
                     Cmd.VerticalAlignment = VerticalAlignment.Bottom;
-                    SL.Margin = SR.Margin = new Thickness(0, 0, 0, 60);
+                    SL.Margin = SR.Margin = DRAW.Margin = new Thickness(0, 0, 0, 60);
                 }
             };
             vm.RegisterPropertyChangedCallback(VModel.BarPositionProperty,b);
@@ -243,6 +245,7 @@ namespace App2
             openPicker.FileTypeFilter.Add(".png");
             var files = await openPicker.PickMultipleFilesAsync();
 
+            vm.Loading = true;
             List<LayerModel> ls = new List<LayerModel>();
             foreach (var file in files)
             {
@@ -261,6 +264,33 @@ namespace App2
                         vm.LayerList.Remove(item);
                 }
             });
+            vm.Loading = false;
+        }
+        public async void OnImportClipboard(object sender, TappedRoutedEventArgs e)
+        {
+            vm.Loading = true;
+            DataPackageView con = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
+            if (con.Contains(StandardDataFormats.Bitmap))
+            {
+                var img = await con.GetBitmapAsync();                
+                WriteableBitmap src = await Img.CreateAsync(img);
+                Exec.Do(new Exec() {
+                    exec = delegate {
+                        vm.LayerList.Insert(0, new LayerModel() {
+                            Bitmap = src
+                        });
+                        vm.CurrentLayer = vm.LayerList[0];
+                    },
+                    undo = delegate {
+                        vm.LayerList.RemoveAt(0);
+                    }
+                });
+            }
+            else
+            {
+                await Task.Delay(500);
+            }
+            vm.Loading = false;
         }
         public async void OnExport(object sender, RoutedEventArgs e)
         {

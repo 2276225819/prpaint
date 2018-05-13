@@ -14,7 +14,7 @@
         <local:CC x:Key="cc"></local:CC>
         <local:BB x:Key="bb"></local:BB>
     </Page.Resources>
-    <Grid > 
+    <Grid >
         <view:DrawPanel x:Name="DRAW" DrawMode="{x:Bind vm.DrawType,Mode=OneWay}" 
                         Layers="{x:Bind vm.LayerList,Mode=OneWay}"
                         DrawRect="{x:Bind vm.DrawRect,Mode=OneWay}"
@@ -102,15 +102,28 @@
                         <StackPanel >
                             <AppBarButton x:Uid="p_m_new" Label="New" Icon="Copy" Tapped="OnCreate"></AppBarButton>
                             <AppBarButton x:Uid="p_m_save" Label="Save"  Icon="Save" Tapped="OnSave" ></AppBarButton>
-                            <AppBarButton x:Uid="p_m_import" Label="Import" Tapped="OnImport">
+                            <AppBarButton x:Uid="p_m_import" Label="Import">
                                 <AppBarButton.Icon>
                                     <BitmapIcon UriSource="ms-appx:///Assets/AppBar/import.png"></BitmapIcon>
                                 </AppBarButton.Icon>
+                                <AppBarButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Tapped="OnImport">ImageFile</MenuFlyoutItem>
+                                        <MenuFlyoutItem Tapped="OnImportClipboard">Clipboard</MenuFlyoutItem>
+                                    </MenuFlyout>
+                                </AppBarButton.Flyout>
                             </AppBarButton>
-                            <AppBarButton x:Uid="p_m_export" Label="Export"  Tapped="OnExport">
+                            <AppBarButton x:Uid="p_m_export" Label="Export" Tapped="OnExport">
                                 <AppBarButton.Icon>
                                     <BitmapIcon UriSource="ms-appx:///Assets/AppBar/export.png"></BitmapIcon>
                                 </AppBarButton.Icon>
+                                <!-- <AppBarButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem>bb</MenuFlyoutItem>
+                                        <MenuFlyoutItem>bb</MenuFlyoutItem>
+                                        <MenuFlyoutItem>bbs</MenuFlyoutItem>
+                                    </MenuFlyout>
+                                </AppBarButton.Flyout>-->
                             </AppBarButton>
                             <AppBarButton x:Uid="p_m_setting" Label="Setting" Icon="Setting" Tapped="OnSetting"></AppBarButton>
                             <AppBarButton x:Uid="p_m_like" Label="Like" Icon="Emoji2" Tapped="OnFeedback"></AppBarButton>

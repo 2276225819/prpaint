@@ -52,7 +52,8 @@ namespace App2.View
         public LayerList()
         {
             this.InitializeComponent();
-            Dispatcher.RunIdleAsync(_ => { 
+            Dispatcher.RunIdleAsync(_ => {
+                if (VModel.vm == null || Items == null) return;
                 Items.CollectionChanged += async (s, e) => {
                     await Task.Delay(100);
                     SetSelected(VModel.vm.CurrentLayer); 

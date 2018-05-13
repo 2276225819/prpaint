@@ -183,10 +183,19 @@ namespace LayerPaint
         public static async Task<WriteableBitmap> CreateAsync(StorageFile file)
         {
             var stream = await file.OpenReadAsync();
-            var b = new WriteableBitmap(1, 1);
+            var b = new WriteableBitmap(1, 1);//BUG
             b.SetSource(stream);
             b.PixelBuffer.ToArray();////BUG
-            return b; 
+            return b;
+        }
+
+        public static async Task<WriteableBitmap> CreateAsync(RandomAccessStreamReference file)
+        {
+            var stream = await file.OpenReadAsync();
+            var b = new WriteableBitmap(1, 1);//BUG
+            b.SetSource(stream);
+            b.PixelBuffer.ToArray();////BUG
+            return b;
         }
 
 

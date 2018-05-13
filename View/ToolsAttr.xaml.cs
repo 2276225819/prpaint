@@ -30,6 +30,7 @@ namespace App2.View
             this.InitializeComponent();
 
             Dispatcher.RunIdleAsync((_) => {
+                if (VModel.vm == null || ScaleObj==null) return;
                 VModel.vm.RegisterPropertyChangedCallback(VModel.CurrentToolsProperty, (s, e) => {
                     SetSelected((ToolsModel)s.GetValue(e));
                 });

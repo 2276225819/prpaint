@@ -110,6 +110,7 @@ namespace App2.View
                     return ((x / ws + y / ws) % 2 == 0) ? ca : cb;
                 });
                 CANVAS.Background = new ImageBrush() { ImageSource = bg };
+                isrota = VModel.vm.DrawRotation;
                 ResizePanel();
             }
         }
@@ -125,9 +126,9 @@ namespace App2.View
             await Task.Delay(100);
             var value = DrawRect;
             CompositeTransform t = new CompositeTransform();
-
+            await Task.Delay(500);
             var s = Math.Min(ROOT.ActualWidth / value.Width, ROOT.ActualHeight / value.Height);
-            t.ScaleX = t.ScaleY = s * 0.8; 
+            t.ScaleX = t.ScaleY = s * 0.94; 
             t.TranslateX = ROOT.ActualWidth / 2 - value.Width / 2;
             t.TranslateY = ROOT.ActualHeight / 2 - value.Height / 2;
             t.CenterX = ROOT.ActualWidth / 2 - t.TranslateX;
@@ -257,7 +258,11 @@ namespace App2.View
         }
         void OnBegin()
         {
-            isrota = VModel.vm.DrawRotation;
+            if(isrota != VModel.vm.DrawRotation)
+            {
+                ResizePanel();
+                isrota = VModel.vm.DrawRotation;
+            }
         }
         void OnShow()
         {
@@ -304,14 +309,18 @@ namespace App2.View
                         CurrentTools.OnDrawing(this, pos);
                         State = MyEnum.Draw;
                         OnBegin();
+                        return;
                     }
-                    else
+                    if(DrawMode == PointerDeviceType.Pen && e.Pointer.PointerDeviceType != PointerDeviceType.Pen)
                     {
-                        if (e.Pointer.IsInContact)
-                        {
-
-                        }
+                        OnBegin();//bug
                     }
+                    //if(DrawMode == PointerDeviceType.Pen && e.Pointer.PointerDeviceType != PointerDeviceType.Pen)
+                    //{
+                    //    State = MyEnum.Move; ;
+                    //    OnBegin();
+                    //    OnShow();
+                    //}
                     break;
                 case MyEnum.Draw:
                     if (drawable)
