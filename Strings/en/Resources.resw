@@ -246,4 +246,13 @@
   <data name="v_n_enter.Text" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="p_t_fontfamily.Header" xml:space="preserve">
+    <value>FontFamily</value>
+  </data>
+  <data name="p_t_fontsize.Header" xml:space="preserve">
+    <value>FontSize</value>
+  </data>
+  <data name="p_t_text.Header" xml:space="preserve">
+    <value>Text</value>
+  </data>
 </root>

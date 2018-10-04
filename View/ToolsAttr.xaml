@@ -137,9 +137,9 @@
             </StackPanel>
         </ControlTemplate>
         <ControlTemplate x:Name="TextAttr">
-            <StackPanel  >
-                <TextBox Header="文本" Text="{Binding Text,Mode=TwoWay}"  FontFamily="{Binding ElementName=FontListBox,Path=SelectedValue}"  AcceptsReturn="True"></TextBox>
-                <ComboBox x:Name="FontListBox" Header="字体" HorizontalAlignment="Stretch" ItemsSource="{Binding Fonts,Mode=OneTime}" SelectedValue="{Binding FontName,Mode=TwoWay}"  >
+            <StackPanel>
+                <TextBox Margin="0,5" x:Uid="p_t_text" Text="{Binding Text,Mode=TwoWay}"  FontFamily="{Binding ElementName=FontListBox,Path=SelectedValue}"  AcceptsReturn="True"></TextBox>
+                <ComboBox Margin="0,5" x:Uid="p_t_fontfamily" x:Name="FontListBox"  HorizontalAlignment="Stretch" ItemsSource="{Binding Fonts,Mode=OneTime}" SelectedValue="{Binding FontName,Mode=TwoWay}"  >
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" FontFamily="{Binding}"></TextBlock>
@@ -147,7 +147,7 @@
                     </ComboBox.ItemTemplate>
                     <TextBlock Text="xxx"></TextBlock>
                 </ComboBox>
-                <Slider Header="大小" Value="{Binding Size,Mode=TwoWay}" Minimum="1"  Maximum="500"></Slider>
+                <Slider Margin="0,5" x:Uid="p_t_fontsize" Value="{Binding Size,Mode=TwoWay}" Minimum="1"  Maximum="500"></Slider>
             </StackPanel>
         </ControlTemplate>
     </UserControl.Resources>
