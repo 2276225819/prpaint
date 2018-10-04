@@ -67,13 +67,13 @@ namespace App2.View
 
         private void ViewIcon_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var elem = sender as SymbolIcon;
+            var elem = sender as FrameworkElement;
             var model = elem.DataContext as LayerModel;
             model.IsShow = !model.IsShow;
         }
         private void EditIcon_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var elem = sender as SymbolIcon;
+            var elem = sender as FrameworkElement;
             var model = elem.DataContext as LayerModel;
             model.IsEdit = !model.IsEdit;
         }
@@ -95,6 +95,23 @@ namespace App2.View
         private void A_Loaded(object sender, RoutedEventArgs e)
         {
             CurrentLayer = CurrentLayer;//bug
+        }
+
+        private void Grid_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            var model = (sender as FrameworkElement).DataContext as LayerModel;
+            var d = new ContentDialog() { PrimaryButtonText="Ok" };
+            var s = new StackPanel();
+            var h = new TextBlock() { Text = "rename" };
+            var t = new TextBox() { Text = model.Name };
+            s.Children.Add(h);   
+            s.Children.Add(t);
+            d.Content = s;
+            d.ShowAsync().AsTask();
+            d.PrimaryButtonClick += (ss, ee)=>{
+                model.Name = t.Text;
+            };
+            
         }
     }
 }

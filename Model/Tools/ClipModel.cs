@@ -55,7 +55,7 @@ namespace App2.Model
         public override void OnDrawBegin(IModel sender, PointerPoint args)
         {
             bk = Points.ToList();
-            sender.XX.Child = CreateView(sender,new PointCollection());
+            sender.ElemArea.Child = CreateView(sender,new PointCollection());
         }
         public override void OnDrawing(IModel sender, PointerPoint args)
         {
@@ -85,7 +85,7 @@ namespace App2.Model
             {
                 p.Add(item);
             }
-            sender.XX.Child = CreateView(sender,p);
+            sender.ElemArea.Child = CreateView(sender,p);
         }
 
         /// bool loc = false;
@@ -143,7 +143,7 @@ namespace App2.Model
                 StrokeLineJoin = PenLineJoin.Bevel,
                 StrokeThickness = vv * 2 ,//
                 StrokeDashArray = new DoubleCollection() { 4 },
-                Stroke = New<LinearGradientBrush>(_ => {
+                Stroke = Elem<LinearGradientBrush>(_ => {
                     for (double i = 0; i < 10; i ++)
                     {
                         _.GradientStops.Add(new GradientStop() {

@@ -136,8 +136,22 @@
                 <CheckBox IsChecked="True">resize</CheckBox>
             </StackPanel>
         </ControlTemplate>
+        <ControlTemplate x:Name="TextAttr">
+            <StackPanel  >
+                <TextBox Header="文本" Text="{Binding Text,Mode=TwoWay}"  FontFamily="{Binding ElementName=FontListBox,Path=SelectedValue}"  AcceptsReturn="True"></TextBox>
+                <ComboBox x:Name="FontListBox" Header="字体" HorizontalAlignment="Stretch" ItemsSource="{Binding Fonts,Mode=OneTime}" SelectedValue="{Binding FontName,Mode=TwoWay}"  >
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" FontFamily="{Binding}"></TextBlock>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    <TextBlock Text="xxx"></TextBlock>
+                </ComboBox>
+                <Slider Header="大小" Value="{Binding Size,Mode=TwoWay}" Minimum="1"  Maximum="500"></Slider>
+            </StackPanel>
+        </ControlTemplate>
     </UserControl.Resources>
-    <ContentControl x:Name="Attr" >
-        <!--   Template="{StaticResource ClipAttr}" -->
+    <ContentControl x:Name="Attr" Template="{StaticResource TextAttr}"  > 
+        <!--    -->
     </ContentControl>
 </UserControl>

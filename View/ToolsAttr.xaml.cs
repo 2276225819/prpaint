@@ -73,7 +73,11 @@ namespace App2.View
                 case PenModel pen:
                     Attr.Template = PenAttr;
                     Attr.DataContext = e;
-                    break; 
+                    break;
+                case TextModel text:
+                    Attr.Template = TextAttr;
+                    Attr.DataContext = e; 
+                    break;
                 default:
                     Attr.Template = null;
                     break;

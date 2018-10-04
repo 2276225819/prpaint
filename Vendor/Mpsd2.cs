@@ -14,9 +14,52 @@ namespace ConsoleApp1
             return t[index];
         }
     }
-    class Mpsd2
+    class Mpsd2 
     {
+        public Encoding encode;
         public Head head = new Head();
+        public short layer;
+        public List<Layer> layerdata = new List<Layer>(); 
+        public bool load(Stream s)
+        {
+            //try
+            //{
+            var r = new R() { encoding = encode } ;
+            r.BaseStream = s;
+            r.format(this);
+            foreach (var item in layerdata)
+            {
+                item.DecodeRaw(head.width, head.height);
+            }
+            // }
+            // catch (Exception e)
+            // {
+            //     return false;
+            // }
+            s.Dispose();
+            return true;
+        }
+        public bool save(Stream s)
+        {
+            // try
+            // {
+            var w = new W() { encoding = encode };
+            w.BaseStream = s;
+            layer = (short)layerdata.Count;
+            //foreach (var item in layerdata)
+            //{
+            //    item.EncoRaw(head.width, head.height);
+            //}
+            w.format(this);
+            /// }
+            /// catch (Exception e)
+            /// {
+            ///     return false;
+            /// }
+            s.Dispose();
+            return true;
+        }
+
         public class Head
         {
             public int height;
@@ -39,8 +82,6 @@ namespace ConsoleApp1
                 };
             }
         }
-        public short layer;
-        public List<Layer> layerdata = new List<Layer>();
         public class Layer
         {
             public string Signature;
@@ -220,7 +261,6 @@ namespace ConsoleApp1
                 }
             }
         }
-
         // public List<Res> res = new List<Res>();
         // public struct Res
         // {
@@ -228,48 +268,6 @@ namespace ConsoleApp1
         //     public string name;
         //     public string data; 
         // }
-
-        public bool load(Stream s)
-        {
-            //try
-            //{
-            var r = new R();
-            r.BaseStream = s;
-            r.format(this);
-            foreach (var item in layerdata)
-            {
-                item.DecodeRaw(head.width, head.height);
-            }
-            // }
-            // catch (Exception e)
-            // {
-            //     return false;
-            // }
-            s.Dispose();
-            return true;
-        }
-        public bool save(Stream s)
-        {
-            // try
-            // {
-            var w = new W();
-            w.BaseStream = s;
-            layer = (short)layerdata.Count;
-            //foreach (var item in layerdata)
-            //{
-            //    item.EncoRaw(head.width, head.height);
-            //}
-            w.format(this);
-            /// }
-            /// catch (Exception e)
-            /// {
-            ///     return false;
-            /// }
-            s.Dispose();
-            return true;
-        }
-
-
         abstract class Base
         {
             public void format(Mpsd2 m)
@@ -419,6 +417,7 @@ namespace ConsoleApp1
             }
 
 
+            public Encoding encoding;
             public Stream BaseStream;
             public byte[] Read(int l, bool r = false)
             {
@@ -476,7 +475,8 @@ namespace ConsoleApp1
             }
             public override void S(int i, ref string v)
             {
-                v = Encoding.ASCII.GetString(Read(i, true));
+                var c = Read(i, true);
+                v = encoding.GetString(c);
             }
             public override void S(int i, ref byte[] v)
             {
@@ -594,11 +594,11 @@ namespace ConsoleApp1
             {
                 if (v == null)
                     v = "";
-                byte len = (byte)v.Length;
-                len = (byte)(((len / padding) + 1) * 4 - 1);
-                v = v.PadRight(len);
+                var ss = encoding.GetBytes(v);
+                byte len = (byte)((( (byte)ss.Length / padding) + 1) * 4 - 1);
+                //v = v.PadRight(len);
                 D(1, ref len);
-                S(len, ref v);
+                S(len, ref ss); 
             }
 
             public override void S(int i)
@@ -607,11 +607,13 @@ namespace ConsoleApp1
             }
             public override void S(int i, ref string v)
             {
-                Write(Encoding.ASCII.GetBytes(v), true);
+                Write(encoding.GetBytes(v), true);
             }
             public override void S(int i, ref byte[] v)
             {
-                Write(v, true);
+                var b = new byte[i];
+                v.CopyTo(b, 0);
+                Write(b, true);
             }
         }
     }

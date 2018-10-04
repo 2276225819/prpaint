@@ -16,6 +16,7 @@ using Windows.Storage.Streams;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using System.Threading;
+using System.Reflection;
 
 namespace LayerPaint
 {
@@ -255,6 +256,20 @@ namespace LayerPaint
             return b;
         }
 
+        public static string ToFormatString(this object model)
+        {
+            Type t = model.GetType();
+            var sb = new System.Text.StringBuilder(); 
+            PropertyInfo[] PropertyList = t.GetProperties();
+            foreach (PropertyInfo item in PropertyList)
+            {
+                sb.Append(item.Name);
+                sb.Append(":");
+                sb.Append(item.GetValue(model, null));
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
         public static string getInfo(this PointerPoint e)
         { 
             System.Text.StringBuilder sb = new System.Text.StringBuilder();

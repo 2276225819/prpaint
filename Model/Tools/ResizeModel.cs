@@ -31,7 +31,7 @@ namespace App2.Model.Tools
 
 
 
-        enum T { Move, Resize, Rotate,ResizeH,ResizeV, NULL };
+        enum T { Move, Resize, Rotate, ResizeH, ResizeV, NULL };
         T type;
 
         Point lp;
@@ -145,12 +145,12 @@ namespace App2.Model.Tools
 
                     VModel.vm.Loading = false;
                 }
-                sender.XX.Child = CreateRect(sender);
+                sender.ElemArea.Child = CreateRect(sender);
                 ch = false;
             }
             else
             {
-                sender.XX.Child = null;
+                sender.ElemArea.Child = null;
                 type = T.NULL;
 
                 if (!ch) return;
@@ -199,7 +199,7 @@ namespace App2.Model.Tools
         public FrameworkElement CreateRect(IModel m)
         {
             var layer = m.CurrentLayer;
-            return New<Grid>(grid => {
+            return Elem<Grid>(grid => {
                 grid.Name = "中心移动";
                 grid.RenderTransform = layer.RenderTransform;
                 grid.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -217,7 +217,7 @@ namespace App2.Model.Tools
                     e.Handled = true;
                     Debug.WriteLine((s as FrameworkElement).Name);
                 };
-                grid.Children.Add(New<Border>(_ => {
+                grid.Children.Add(Elem<Border>(_ => {
                     _.Name = "对角 等比缩放";
                     _.VerticalAlignment = VerticalAlignment.Top;
                     _.HorizontalAlignment = HorizontalAlignment.Left;
@@ -227,7 +227,7 @@ namespace App2.Model.Tools
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
-                grid.Children.Add(New<Border>(_ => {
+                grid.Children.Add(Elem<Border>(_ => {
                     _.Name = "对角 等比缩放";
                     _.VerticalAlignment = VerticalAlignment.Top;
                     _.HorizontalAlignment = HorizontalAlignment.Right;
@@ -237,7 +237,7 @@ namespace App2.Model.Tools
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
-                grid.Children.Add(New<Border>(_ => {
+                grid.Children.Add(Elem<Border>(_ => {
                     _.Name = "对角 等比缩放";
                     _.VerticalAlignment = VerticalAlignment.Bottom;
                     _.HorizontalAlignment = HorizontalAlignment.Left;
@@ -247,7 +247,7 @@ namespace App2.Model.Tools
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
-                grid.Children.Add(New<Border>(_ => {
+                grid.Children.Add(Elem<Border>(_ => {
                     _.Name = "对角 等比缩放";
                     _.VerticalAlignment = VerticalAlignment.Bottom;
                     _.HorizontalAlignment = HorizontalAlignment.Right;
@@ -268,7 +268,7 @@ namespace App2.Model.Tools
                 //        Debug.WriteLine((s as FrameworkElement).Name);
                 //    };
                 //})); 
-                grid.Children.Add(New<Border>(_ => {
+                grid.Children.Add(Elem<Border>(_ => {
                     _.Name = "上 旋转";
                     _.Child = new Viewbox() {
                         UseLayoutRounding = false,
@@ -286,7 +286,7 @@ namespace App2.Model.Tools
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
-                grid.Children.Add(New<Line>(_ => {
+                grid.Children.Add(Elem<Line>(_ => {
                     _.Name = "右 水平缩放";
                     _.VerticalAlignment = VerticalAlignment.Center;
                     _.HorizontalAlignment = HorizontalAlignment.Right;
@@ -298,7 +298,7 @@ namespace App2.Model.Tools
 
                     };
                 }));
-                grid.Children.Add(New<Line>(_ => {
+                grid.Children.Add(Elem<Line>(_ => {
                     _.Name = "下 垂直缩放";
                     _.VerticalAlignment = VerticalAlignment.Bottom;
                     _.HorizontalAlignment = HorizontalAlignment.Center;

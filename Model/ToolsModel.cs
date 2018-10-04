@@ -95,7 +95,7 @@ namespace App2.Model
         {
         }
 
-        public T New<T>(Action<T> cb) where T : DependencyObject, new()
+        public T Elem<T>(Action<T> cb) where T : DependencyObject, new()
         {
             var tcss = new T();
             cb(tcss);
@@ -108,6 +108,7 @@ namespace App2.Model
         LayerModel CurrentLayer { get; set; }
         ObservableCollection<LayerModel> Layers { get; set; }
         Action<double> OnChangeDraw { set; }
-        Border XX { get; }
+        Border ElemArea { get; }
+        
     }
 }

@@ -37,7 +37,9 @@ namespace App2.View
 
                 Extends.Add(new Model.Tools.ResizeModel());
                 Extends.Add(new Model.Tools.PickerModel());
+
                 Extends.Add(new Model.Tools.BuckerModel());
+                Extends.Add(new Model.Tools.TextModel());
                 //Extends.Add(new ToolsModel() {
                 //    Icon = "ms-appx:///Assets/AppBar/bucker.png",
                 //    Name = "bucker",

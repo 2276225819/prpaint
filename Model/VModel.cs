@@ -32,7 +32,7 @@ namespace App2.Model
         {
             vm = this;
             vm.DrawRect = new Rect() { Width = 800, Height = 800 };
-
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             act();
             
@@ -302,12 +302,11 @@ namespace App2.Model
                 await d.FlushAsync();
             }
         }
-        static int i = 0;
         public async Task LoadPSD(StorageFile file, IList<LayerModel> ls, Action<int, int> d = null)
         {
             using (var stream = await file.OpenStreamForReadAsync())
             {
-                var psd = new ConsoleApp1.Mpsd2();
+                var psd = new ConsoleApp1.Mpsd2() { encode = await GetLocalEncode() };
                 psd.load(stream);
                 d?.Invoke(psd.head.width, psd.head.height);
                 foreach (var layer in psd.layerdata)
@@ -341,7 +340,7 @@ namespace App2.Model
 
         public async Task SavePSD(StorageFile file, IList<LayerModel> ls, int w, int h)
         {
-            var psd = new ConsoleApp1.Mpsd2();
+            var psd = new ConsoleApp1.Mpsd2() { encode = await GetLocalEncode()};
             psd.head = ConsoleApp1.Mpsd2.Head.Create(w, h);
             var tt = new Task<ConsoleApp1.Mpsd2.Layer>[ls.Count];
             for (int i = 0; i < ls.Count; i++)
@@ -385,7 +384,11 @@ namespace App2.Model
             await tmp.DeleteAsync();
         }
 
-
+        public async Task<Encoding> GetLocalEncode()
+        {
+            var cname = await (new WebView()).InvokeScriptAsync("eval", new[] { "document.charset" });
+            return Encoding.GetEncoding(cname);
+        }
 
 
     }

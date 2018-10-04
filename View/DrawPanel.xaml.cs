@@ -43,7 +43,7 @@ namespace App2.View
         // public event Windows.Foundation.TypedEventHandler<LayerModel, PointerPoint> DrawBegin;//= (s, e) => { Debug.WriteLine("Drawing"); };
         // public event Windows.Foundation.TypedEventHandler<LayerModel, PointerPoint> DrawCommit;//= (s, e) => { Debug.WriteLine(s.Name); };
         // public event Windows.Foundation.TypedEventHandler<LayerModel, PointerPoint> DrawRollback;//= (s, e) => { Debug.WriteLine(s.Name); };
-        public Border XX => GRAPHIC;
+        public Border ElemArea => GRAPHIC;
         public Action<double> OnChangeDraw { set; get; }
         public ItemsControl ITEMS => LAYS;
         public bool isrota = false;
@@ -90,7 +90,6 @@ namespace App2.View
                     CenterX = ROOT.ActualWidth/2,
                 });
                 CANVAS.RenderTransform = new MatrixTransform() { Matrix = g.Value };
-                Matrix a = new Matrix();
             }
         }
 
