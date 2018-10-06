@@ -35,7 +35,7 @@ namespace App2.Model.Tools
         {
             var e = sender.ElemArea.Child as TextBlock;
             if (e == null) return;
-            e.RenderTransform = new TranslateTransform() { X = args.Position.X, Y = args.Position.Y };
+            e.RenderTransform = new TranslateTransform() { X = args.Position.X - e.ActualWidth / 2, Y = args.Position.Y - e.ActualHeight / 2 };
         }
         public override void OnDrawRollback(IModel sender, PointerPoint args)
         {
@@ -56,11 +56,10 @@ namespace App2.Model.Tools
                 e.Text = Text;
                 e.FontFamily = new FontFamily(FontName);
                 e.Foreground = new SolidColorBrush() { Color = Color };
-                e.HorizontalAlignment = HorizontalAlignment.Left;
+                //e.HorizontalAlignment = HorizontalAlignment.Center;
                 //e.HorizontalTextAlignment = TextAlignment.Left;
-                e.VerticalAlignment = VerticalAlignment.Top;
+                //e.VerticalAlignment = VerticalAlignment.Center;
                 e.FontSize = Size;
-                e.RenderTransform = new TranslateTransform() { X = args.Position.X, Y = args.Position.Y };
             });
 
             sender.CurrentLayer.getRect(out orec, out obmp);
@@ -77,7 +76,8 @@ namespace App2.Model.Tools
             var ob = obmp;
             var rb = await (area.Child as FrameworkElement).Render();
             var layer = sender.CurrentLayer;
-            var rect = new Rect(args.Position.X,args.Position.Y, rb.PixelWidth,rb.PixelHeight);
+            var pos = (area.Child as FrameworkElement).RenderTransform as TranslateTransform;
+            var rect = new Rect(pos.X, pos.Y, rb.PixelWidth,rb.PixelHeight);
             var nr = RectHelper.Intersect(orec.IsEmpty ? rect : RectHelper.Union(rect, orec) , DrawRect);
             var i = sender.Layers.IndexOf(layer);
             var b = sender.CurrentLayer.Bitmap.Clone();
@@ -85,7 +85,7 @@ namespace App2.Model.Tools
 
             var nb = new WriteableBitmap((int)Math.Ceiling(nr.Width), (int)Math.Ceiling(nr.Height));
             IGrap.addImg(b, nb, -(int)Math.Floor(nr.X - or.Left), -(int)Math.Floor(nr.Y - or.Top));
-            IGrap.addImg(rb, nb, -(int)Math.Floor(nr.X - args.Position.X), -(int)Math.Floor(nr.Y - args.Position.Y));
+            IGrap.addImg(rb, nb, -(int)Math.Floor(nr.X - rect.X), -(int)Math.Floor(nr.Y - rect.Y));
 
 
             Exec.Do(new Exec() {

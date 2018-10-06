@@ -81,7 +81,11 @@ namespace App2
         }
         public Windows.UI.Color BackColor => vm.BackBrush.Color;
         public Rect DrawRect => vm.DrawRect;
-         
+        public int PivotIndex
+        {
+            get => PIVOT.SelectedIndex;
+            set => PIVOT.SelectedIndex = value;
+        }
 
         public MainPage()
         {
@@ -115,7 +119,6 @@ namespace App2
             //     Debug.WriteLine("BUGBUGBUGBUGBUGBUGBUGBUGBUGBUGBUGBUGBUG");
             //     CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false; 
             // }
-
 
             //ApplicationView.GetForCurrentView().ExitFullScreenMode();
 
@@ -265,33 +268,8 @@ namespace App2
                 }
             });
             vm.Loading = false;
-        }
-        public async void OnImportClipboard(object sender, TappedRoutedEventArgs e)
-        {
-            vm.Loading = true;
-            DataPackageView con = Windows.ApplicationModel.DataTransfer.Clipboard.GetContent();
-            if (con.Contains(StandardDataFormats.Bitmap))
-            {
-                var img = await con.GetBitmapAsync();                
-                WriteableBitmap src = await Img.CreateAsync(img);
-                Exec.Do(new Exec() {
-                    exec = delegate {
-                        vm.LayerList.Insert(0, new LayerModel() {
-                            Bitmap = src
-                        });
-                        vm.CurrentLayer = vm.LayerList[0];
-                    },
-                    undo = delegate {
-                        vm.LayerList.RemoveAt(0);
-                    }
-                });
-            }
-            else
-            {
-                await Task.Delay(500);
-            }
-            vm.Loading = false;
-        }
+        } 
+
         public async void OnExport(object sender, RoutedEventArgs e)
         {
             var picker = new FileSavePicker(); 

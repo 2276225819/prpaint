@@ -102,16 +102,16 @@
                         <StackPanel >
                             <AppBarButton x:Uid="p_m_new" Label="New" Icon="Copy" Tapped="OnCreate"></AppBarButton>
                             <AppBarButton x:Uid="p_m_save" Label="Save"  Icon="Save" Tapped="OnSave" ></AppBarButton>
-                            <AppBarButton x:Uid="p_m_import" Label="Import">
+                            <AppBarButton x:Uid="p_m_import" Label="Import"  Tapped="OnImport">
                                 <AppBarButton.Icon>
                                     <BitmapIcon UriSource="ms-appx:///Assets/AppBar/import.png"></BitmapIcon>
                                 </AppBarButton.Icon>
-                                <AppBarButton.Flyout>
+                                <!--  <AppBarButton.Flyout>
                                     <MenuFlyout>
                                         <MenuFlyoutItem Tapped="OnImport">ImageFile</MenuFlyoutItem>
                                         <MenuFlyoutItem Tapped="OnImportClipboard">Clipboard</MenuFlyoutItem>
                                     </MenuFlyout>
-                                </AppBarButton.Flyout>
+                                </AppBarButton.Flyout> -->
                             </AppBarButton>
                             <AppBarButton x:Uid="p_m_export" Label="Export" Tapped="OnExport">
                                 <AppBarButton.Icon>

@@ -118,8 +118,16 @@
         </ControlTemplate>
         <ControlTemplate x:Name="ClipAttr">
             <StackPanel>
-                <Button Tapped="OnClipAttrCancel" x:Uid="p_t_clipdel">qingkong</Button> 
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="0,4"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+                    </Style>
+                </StackPanel.Resources>
                 <TextBlock Text="{Binding PointCount}"></TextBlock>
+                <Button Tapped="OnClipAttrCancel" x:Uid="p_t_clipdel" >qingkong</Button>
+                <Button Tapped="OnClipAttrCopy" x:Uid="p_t_copy">fuzhi</Button>
+                <Button Tapped="OnClipAttrPaste" x:Uid="p_t_paste">zhantie</Button> 
                 <!-- <Button Tapped="OnClipAttrEnter">确认</Button>
                 <Button>copy</Button>
                 <Button>cut</Button>
@@ -151,7 +159,7 @@
             </StackPanel>
         </ControlTemplate>
     </UserControl.Resources>
-    <ContentControl x:Name="Attr" Template="{StaticResource TextAttr}"  > 
+    <ContentControl x:Name="Attr" Template="{StaticResource ClipAttr}"  > 
         <!--    -->
     </ContentControl>
 </UserControl>

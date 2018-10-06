@@ -19,6 +19,10 @@ using Windows.UI.Xaml.Media.Imaging;
 using LayerPaint;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage.Streams;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
 //https://go.microsoft.com/fwlink/?LinkId=234236 上介绍了“用户控件”项模板
 
 namespace App2.View
@@ -166,15 +170,61 @@ namespace App2.View
                 loc = false;
             }).ToString();
         }
-
-        private void OnClipAttrEnter(object sender, TappedRoutedEventArgs e)
-        {
-            Clipper.Points.Clear();
-        }
+         
 
         private void OnClipAttrCancel(object sender, TappedRoutedEventArgs e)
         {
             Clipper.Points.Clear();
+        }
+
+        private async void OnClipAttrCopy(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = VModel.vm;
+            vm.Loading = true;
+            var ot = await Clipper.CopyImage(VModel.vm.CurrentLayer);
+
+            var stream = new InMemoryRandomAccessStream();
+            var d = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+            d.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
+                (uint)ot.PixelWidth, (uint)ot.PixelHeight, 96, 96,
+                ot.PixelBuffer.ToArray());
+            await d.FlushAsync();
+
+            var ss = RandomAccessStreamReference.CreateFromStream(stream);
+            var dd = new DataPackage();
+            dd.SetBitmap(ss);
+            Clipboard.SetContent(dd);
+          
+            vm.Loading = false;
+        }
+
+        private async void OnClipAttrPaste(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = VModel.vm;
+            vm.Loading = true;
+            DataPackageView con = Clipboard.GetContent();
+            if (con.Contains(StandardDataFormats.Bitmap))
+            {
+                var img = await con.GetBitmapAsync();
+                WriteableBitmap src = await Img.CreateAsync(img);
+                Exec.Do(new Exec() {
+                    exec = delegate {
+                        vm.LayerList.Insert(0, new LayerModel() {
+                            Bitmap = src
+                        });
+                        vm.CurrentLayer = vm.LayerList[0];
+                    },
+                    undo = delegate {
+                        vm.LayerList.RemoveAt(0);
+                    }
+                });
+            }
+            else
+            {
+                await Task.Delay(500);
+            }
+            vm.Loading = false;
+            MainPage.Current.PivotIndex = 2;
         }
 
         private void Button_Tapped(object sender, TappedRoutedEventArgs e)
@@ -185,6 +235,6 @@ namespace App2.View
            //var b = VModel.vm.CurrentTools;
 
 
-        }
+        } 
     }
 }

@@ -255,4 +255,10 @@
   <data name="p_t_text.Header" xml:space="preserve">
     <value>文本</value>
   </data>
+  <data name="p_t_copy.Content" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="p_t_paste.Content" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
 </root>

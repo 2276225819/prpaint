@@ -170,5 +170,31 @@ namespace App2.Model
             }
 
         }
+
+
+        public async Task<WriteableBitmap> CopyImage(LayerModel layer)
+        {
+            layer.getRect(out Rect orec, out WriteableBitmap obb);
+            if (Clipper.IsCliping)
+            {
+                var Bitmap = new WriteableBitmap((int)DrawRect.Width, (int)DrawRect.Height);
+                //var c = Windows.UI.Color.FromArgb(0,255, 255, 255);
+                //IGrap.fillColor(Bitmap, (x, y) => {
+                //    return c;
+                //});
+                IGrap.copyImg(obb, Bitmap, (int)orec.X, (int)orec.Y);
+                layer.Child = Clipper.createPolygon(Bitmap);
+
+                var xb = await layer.Child.Render();
+
+                Clipper.Points.Clear();
+                layer.Child = null;
+                return xb;
+            }
+            else
+            {
+                return obb;
+            }
+        }
     }
 }

@@ -51,7 +51,7 @@
                     <Border  Opacity="{Binding View,Mode=OneWay}" Grid.Column="2" Grid.Row="0"  Tapped="ViewIcon_Tapped"  >
                         <SymbolIcon  Symbol="View"/>
                     </Border>
-                    <Border  Opacity="{Binding View,Mode=OneWay}" Grid.Column="3" Grid.Row="0"  Tapped="EditIcon_Tapped" >
+                    <Border  Opacity="{Binding Edit,Mode=OneWay}" Grid.Column="3" Grid.Row="0"  Tapped="EditIcon_Tapped" >
                         <SymbolIcon Symbol="Edit"/>
                     </Border>
                     <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="3"  Orientation="Horizontal" VerticalAlignment="Bottom" Height="25" Padding="3">
