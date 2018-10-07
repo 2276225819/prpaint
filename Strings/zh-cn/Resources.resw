@@ -261,4 +261,10 @@
   <data name="p_t_paste.Content" xml:space="preserve">
     <value>粘贴</value>
   </data>
+  <data name="p_t_fill.Header" xml:space="preserve">
+    <value>填充</value>
+  </data>
+  <data name="p_t_shape.Header" xml:space="preserve">
+    <value>形状</value>
+  </data>
 </root>

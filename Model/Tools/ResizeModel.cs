@@ -26,7 +26,7 @@ namespace App2.Model.Tools
         }
         //Point a;
         //Point o;
-        Task<WriteableBitmap> tt = null;
+        //Task<WriteableBitmap> tt = null;
         //WriteableBitmap cbmp; 
 
 
@@ -110,38 +110,39 @@ namespace App2.Model.Tools
 
 
                     var p = (Point)layer.Child.Tag;
-                    var xb = await (tt = layer.Child.Render());
-
+                    var xb = await (layer.Child.Render());
                     Clipper.Points.Clear();
                     layer.Child = null;
-
-                    var i = sender.Layers.IndexOf(layer);
-                    var nb = obb;
-                    var ob = obb;
-                    if (layer.Bitmap != null)
+                    if (xb != null)
                     {
-                        nb = layer.Bitmap.Clone();
-                        IGrap.delImg(xb, nb, (int)(p.X - orec.X), (int)(p.Y - orec.Y));
-                        nb.Invalidate();
-                    }
-                    obb = xb;
-                    orec = new Rect(p.X, p.Y, xb.PixelWidth, xb.PixelHeight);
-                    Exec.Do(new Exec() {
-                        exec = () => {
-                            sender.Layers[i].Bitmap = nb;
-                            sender.Layers.Insert(i, new LayerModel() {
-                                Bitmap = xb,
-                                X = p.X,
-                                Y = p.Y
-                            });
-                            sender.CurrentLayer = sender.Layers[i];
-                        },
-                        undo = () => {
-                            sender.Layers.RemoveAt(i);
-                            sender.CurrentLayer = sender.Layers[i];
-                            sender.CurrentLayer.Bitmap = ob;
+                        var i = sender.Layers.IndexOf(layer);
+                        var nb = obb;
+                        var ob = obb;
+                        if (layer.Bitmap != null)
+                        {
+                            nb = layer.Bitmap.Clone();
+                            IGrap.delImg(xb, nb, (int)(p.X - orec.X), (int)(p.Y - orec.Y));
+                            nb.Invalidate();
                         }
-                    });
+                        obb = xb;
+                        orec = new Rect(p.X, p.Y, xb.PixelWidth, xb.PixelHeight);
+                        Exec.Do(new Exec() {
+                            exec = () => {
+                                sender.Layers[i].Bitmap = nb;
+                                sender.Layers.Insert(i, new LayerModel() {
+                                    Bitmap = xb,
+                                    X = p.X,
+                                    Y = p.Y
+                                });
+                                sender.CurrentLayer = sender.Layers[i];
+                            },
+                            undo = () => {
+                                sender.Layers.RemoveAt(i);
+                                sender.CurrentLayer = sender.Layers[i];
+                                sender.CurrentLayer.Bitmap = ob;
+                            }
+                        });
+                    }
 
                     VModel.vm.Loading = false;
                 }

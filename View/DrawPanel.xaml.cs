@@ -78,20 +78,6 @@ namespace App2.View
         public double Scale;
 
 
-        public bool ScaleX
-        {
-            get => true;
-            set {
-
-                var g = new TransformGroup();
-                g.Children.Add(CANVAS.RenderTransform);
-                g.Children.Add(new ScaleTransform() {
-                    ScaleX = -1,
-                    CenterX = ROOT.ActualWidth/2,
-                });
-                CANVAS.RenderTransform = new MatrixTransform() { Matrix = g.Value };
-            }
-        }
 
         public Rect DrawRect
         {
@@ -120,6 +106,17 @@ namespace App2.View
 
 
 
+        public void FlipPanel()
+        {
+            var g = new TransformGroup();
+            g.Children.Add(CANVAS.RenderTransform);
+            g.Children.Add(new ScaleTransform() {
+                ScaleX = -1,
+                CenterX = ROOT.ActualWidth / 2,
+            });
+            CANVAS.RenderTransform = new MatrixTransform() { Matrix = g.Value };
+
+        }
         public async void ResizePanel()
         {
             await Task.Delay(100);

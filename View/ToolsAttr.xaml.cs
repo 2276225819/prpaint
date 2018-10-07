@@ -80,7 +80,11 @@ namespace App2.View
                     break;
                 case TextModel text:
                     Attr.Template = TextAttr;
-                    Attr.DataContext = e; 
+                    Attr.DataContext = e;
+                    break;
+                case FillModel fill:
+                    Attr.Template = FillAttr;
+                    Attr.DataContext = e;
                     break;
                 default:
                     Attr.Template = null;
@@ -182,19 +186,20 @@ namespace App2.View
             var vm = VModel.vm;
             vm.Loading = true;
             var ot = await Clipper.CopyImage(VModel.vm.CurrentLayer);
+            if (ot != null)
+            {
+                var stream = new InMemoryRandomAccessStream();
+                var d = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+                d.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
+                    (uint)ot.PixelWidth, (uint)ot.PixelHeight, 96, 96,
+                    ot.PixelBuffer.ToArray());
+                await d.FlushAsync();
 
-            var stream = new InMemoryRandomAccessStream();
-            var d = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-            d.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
-                (uint)ot.PixelWidth, (uint)ot.PixelHeight, 96, 96,
-                ot.PixelBuffer.ToArray());
-            await d.FlushAsync();
-
-            var ss = RandomAccessStreamReference.CreateFromStream(stream);
-            var dd = new DataPackage();
-            dd.SetBitmap(ss);
-            Clipboard.SetContent(dd);
-          
+                var ss = RandomAccessStreamReference.CreateFromStream(stream);
+                var dd = new DataPackage();
+                dd.SetBitmap(ss);
+                Clipboard.SetContent(dd);
+            }
             vm.Loading = false;
         }
 

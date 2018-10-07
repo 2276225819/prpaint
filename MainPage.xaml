@@ -162,7 +162,7 @@
                             </Border>
                         </Grid>
                     </AppBarButton>
-                    <AppBarButton  Label="off" Icon="Switch" Tapped="{x:Bind BarLayer_Tapped}" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}" ></AppBarButton>
+                    <AppBarButton  Label="flip" Icon="Switch" Tapped="BarLayer_Tapped" DoubleTapped="AppBarButton_DoubleTapped" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}" ></AppBarButton>
 
                 </StackPanel>
             </Grid>

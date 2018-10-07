@@ -13,7 +13,7 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
 
-        <GridView x:Name="A" SelectionChanged="SelectionChanged" ItemsSource="{x:Bind Extends}" Padding="0,0,0,0"  Grid.Row="0"  Width="160" HorizontalAlignment="Left" >
+        <GridView x:Name="A" SelectionChanged="SelectionChanged" ItemsSource="{x:Bind Extends}" Padding="0,0,0,0"  Grid.Row="0" >
             <GridView.ItemTemplate>
                 <DataTemplate>
                     <ItemsControl >

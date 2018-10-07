@@ -43,10 +43,6 @@ namespace App2.Model.Tools
             sender.ElemArea.Child = null;
         }
 
-
-        static WriteableBitmap obmp; 
-        static Rect orec;
-
         public override void OnDrawBegin(IModel sender, PointerPoint args)
         {
             if (Text == null || Text.Length < 1) return;
@@ -62,7 +58,6 @@ namespace App2.Model.Tools
                 e.FontSize = Size;
             });
 
-            sender.CurrentLayer.getRect(out orec, out obmp);
         }
         public override async void OnDrawCommit(IModel sender, PointerPoint args)
         {
@@ -71,33 +66,35 @@ namespace App2.Model.Tools
             if (area.Child == null) return;
 
             VModel.vm.Loading = true;
-
-            var or = orec;
-            var ob = obmp;
+             
+            sender.CurrentLayer.getRect(out Rect or, out WriteableBitmap ob);
             var rb = await (area.Child as FrameworkElement).Render();
-            var layer = sender.CurrentLayer;
-            var pos = (area.Child as FrameworkElement).RenderTransform as TranslateTransform;
-            var rect = new Rect(pos.X, pos.Y, rb.PixelWidth,rb.PixelHeight);
-            var nr = RectHelper.Intersect(orec.IsEmpty ? rect : RectHelper.Union(rect, orec) , DrawRect);
-            var i = sender.Layers.IndexOf(layer);
-            var b = sender.CurrentLayer.Bitmap.Clone();
+            if (rb!=null)
+            {
+                var layer = sender.CurrentLayer;
+                var pos = (area.Child as FrameworkElement).RenderTransform as TranslateTransform;
+                var rect = new Rect(pos.X, pos.Y, rb.PixelWidth, rb.PixelHeight);
+                var nr = RectHelper.Intersect(or.IsEmpty ? rect : RectHelper.Union(rect, or), DrawRect);
+                var i = sender.Layers.IndexOf(layer);
+                var b = sender.CurrentLayer.Bitmap.Clone();
 
 
-            var nb = new WriteableBitmap((int)Math.Ceiling(nr.Width), (int)Math.Ceiling(nr.Height));
-            IGrap.addImg(b, nb, -(int)Math.Floor(nr.X - or.Left), -(int)Math.Floor(nr.Y - or.Top));
-            IGrap.addImg(rb, nb, -(int)Math.Floor(nr.X - rect.X), -(int)Math.Floor(nr.Y - rect.Y));
+                var nb = new WriteableBitmap((int)Math.Ceiling(nr.Width), (int)Math.Ceiling(nr.Height));
+                IGrap.addImg(b, nb, -(int)Math.Floor(nr.X - or.Left), -(int)Math.Floor(nr.Y - or.Top));
+                IGrap.addImg(rb, nb, -(int)Math.Floor(nr.X - rect.X), -(int)Math.Floor(nr.Y - rect.Y));
 
 
-            Exec.Do(new Exec() {
-                exec = () => {
-                    sender.Layers[i].setRect(nr, nb);
-                },
-                undo = () => {
-                    sender.Layers[i].setRect(or, ob);
-                    sender.CurrentLayer = sender.Layers[i];
-                }
-            }); 
-            VModel.vm.Loading = false  ;
+                Exec.Do(new Exec() {
+                    exec = () => {
+                        sender.Layers[i].setRect(nr, nb);
+                    },
+                    undo = () => {
+                        sender.Layers[i].setRect(or, ob);
+                        sender.CurrentLayer = sender.Layers[i];
+                    }
+                });
+            }
+            VModel.vm.Loading = false;
             sender.ElemArea.Child = null;
 
         }

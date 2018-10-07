@@ -351,6 +351,10 @@ namespace LayerPaint
                     await rt.RenderAsync(element, (int)Math.Round(rtb.PixelWidth / di.RawPixelsPerViewPixel / di.RawPixelsPerViewPixel),
                                                   (int)Math.Round(rtb.PixelHeight / di.RawPixelsPerViewPixel / di.RawPixelsPerViewPixel)); 
                     var pixelBuffer = await rt.GetPixelsAsync();
+                    if (rt.PixelHeight == 0 || rt.PixelWidth == 0)
+                    {
+                        return null;
+                    }
 
                     var bmp = new WriteableBitmap((int)rt.PixelWidth, (int)rt.PixelHeight);
                     await bmp.PixelBuffer.AsStream().AsRandomAccessStream().WriteAsync(pixelBuffer);

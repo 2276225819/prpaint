@@ -158,8 +158,21 @@
                 <Slider Margin="0,5" x:Uid="p_t_fontsize" Value="{Binding Size,Mode=TwoWay}" Minimum="1"  Maximum="500"></Slider>
             </StackPanel>
         </ControlTemplate>
+        <ControlTemplate x:Name="FillAttr">
+            <StackPanel>
+                <ComboBox Header="xingzhuang" x:Uid="p_t_shape" SelectedValue="{Binding Type,Mode=TwoWay}" HorizontalAlignment="Stretch">
+                    <!--- <x:String>Line</x:String>-->
+                    <x:String>Rectangle</x:String>
+                    <x:String>Ellipse</x:String>
+                    <x:String>Circle</x:String>
+                </ComboBox>
+                <Slider Margin="0,5" x:Uid="p_t_fontsize" Header="border" Value="{Binding Size,Mode=TwoWay}" Minimum="0"  Maximum="100"></Slider>
+                <ToggleSwitch x:Uid="p_t_fill" Header="fill" IsOn="{Binding Fill,Mode=TwoWay}" ></ToggleSwitch>
+            </StackPanel>
+        </ControlTemplate>
     </UserControl.Resources>
-    <ContentControl x:Name="Attr" Template="{StaticResource ClipAttr}"  > 
+    <ContentControl x:Name="Attr" Template="{StaticResource FillAttr}"  > 
         <!--    -->
+        <Rectangle></Rectangle>
     </ContentControl>
 </UserControl>

@@ -220,11 +220,12 @@ namespace App2
 
         private void BarLayer_Tapped(object sender, RoutedEventArgs e)
         {
-            var p = sender as AppBarButton;
-            DRAW.ScaleX = !DRAW.ScaleX;
-            p.Label = DRAW.ScaleX ? "off" : "on";
+            DRAW.FlipPanel(); 
+        } 
+        private void AppBarButton_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            DRAW.ResizePanel();
         }
-
 
         public async void OnCreate(object sender, RoutedEventArgs e)
         {
@@ -254,19 +255,21 @@ namespace App2
             {
                 await vm.LoadFile(file, ls);
             }
-            if (ls.Count == 0) return;
-            ls.Reverse();
-            Exec.Do(new Exec() {
-                exec = delegate {
-                    foreach (var item in ls)
-                        vm.LayerList.Insert(0,item);
-                    vm.CurrentLayer = ls[0];
-                },
-                undo = delegate {
-                    foreach (var item in ls)
-                        vm.LayerList.Remove(item);
-                }
-            });
+            if (ls.Count != 0)
+            {
+                ls.Reverse();
+                Exec.Do(new Exec() {
+                    exec = delegate {
+                        foreach (var item in ls)
+                            vm.LayerList.Insert(0, item);
+                        vm.CurrentLayer = ls[0];
+                    },
+                    undo = delegate {
+                        foreach (var item in ls)
+                            vm.LayerList.Remove(item);
+                    }
+                });
+            }
             vm.Loading = false;
         } 
 
