@@ -146,8 +146,8 @@
         </ControlTemplate>
         <ControlTemplate x:Name="TextAttr">
             <StackPanel>
-                <TextBox Margin="0,5" x:Uid="p_t_text" Text="{Binding Text,Mode=TwoWay}"  MaxLength="200"
-                         FontFamily="{Binding ElementName=FontListBox,Path=SelectedValue}"  AcceptsReturn="True"
+                <TextBox Margin="0,5" x:Uid="p_t_text" Text="{Binding Text,Mode=TwoWay}" 
+                         AcceptsReturn="True" MaxLength="200"
                          LostFocus="TextBox_LostFocus"
                          ></TextBox>
                 <ComboBox Margin="0,5" x:Uid="p_t_fontfamily" x:Name="FontListBox"  HorizontalAlignment="Stretch" 
@@ -177,8 +177,14 @@
                 <ToggleSwitch x:Uid="p_t_fill" Header="fill" IsOn="{Binding Fill,Mode=TwoWay}" ></ToggleSwitch>
             </StackPanel>
         </ControlTemplate>
+        <ControlTemplate x:Name="PickAttr">
+            <StackPanel>
+                <ToggleSwitch x:Uid="p_t_all_layer" Header="AllLayer" IsOn="{Binding PickAll,Mode=TwoWay}" ></ToggleSwitch>
+            </StackPanel>
+        </ControlTemplate>
+        
     </UserControl.Resources>
-    <ContentControl x:Name="Attr" Template="{StaticResource TextAttr}"    > 
+    <ContentControl x:Name="Attr" Template="{StaticResource PickAttr}"    > 
         <!--    -->
         <Rectangle></Rectangle>
     </ContentControl>

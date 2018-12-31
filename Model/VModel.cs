@@ -179,12 +179,18 @@ namespace App2.Model
         {
             if (Loading == true) return;
             Loading = true;
-
-            Debug.WriteLine("BeginBackUp");
-            var dir = await KnownFolders.PicturesLibrary.CreateFolderAsync("Prpaint", CreationCollisionOption.OpenIfExists);
-            var tmp = await dir.CreateFileAsync("_tmp", CreationCollisionOption.OpenIfExists);
-            await SavePSD(tmp, LayerList, (int)DrawRect.Width, (int)DrawRect.Height);
-            Debug.WriteLine("EndBackUp");
+            try
+            {
+                Debug.WriteLine("BeginBackUp");
+                var dir = await KnownFolders.PicturesLibrary.CreateFolderAsync("Prpaint", CreationCollisionOption.OpenIfExists);
+                var tmp = await dir.CreateFileAsync("_tmp", CreationCollisionOption.OpenIfExists);
+                await SavePSD(tmp, LayerList, (int)DrawRect.Width, (int)DrawRect.Height);
+                Debug.WriteLine("EndBackUp");
+            }
+            catch (Exception e)
+            {
+                (new MessageDialog(e.ToString())).ShowAsync().ToString();
+            }
 
             Loading = false;
         }
@@ -234,50 +240,56 @@ namespace App2.Model
 
 
         public async Task SaveFile(StorageFile file, IList<LayerModel> ls, int x, int y)
-        { 
+        {
             await Dispatcher.RunIdleAsync(_ => { });
             Loading = true;
-            WriteableBitmap ot = new WriteableBitmap(x, y);
-            foreach (var item in ls.Reverse())
+            StorageFolder f = null;
+            try
             {
-                if (!item.IsShow) continue;
-                IGrap.addImg(item.Bitmap, ot, (int)item.X, (int)item.Y, item.Opacity);
+                f = await StorageFolder.GetFolderFromPathAsync(file.Path.Replace(file.Name, "")); 
             }
-
-            switch (file.FileType.ToLower())
+            catch (Exception)
             {
-                case ".jpg":
-                    await SaveIMG(ot, file, BitmapEncoder.JpegEncoderId);
-                    break;
-                case ".gif":
-                    await SaveIMG(ot, file, BitmapEncoder.GifEncoderId);
-                    return; //xuy 
-                case ".png":
-                    await SaveIMG(ot, file, BitmapEncoder.PngEncoderId);
-                    try
-                    {
-                        var f = await StorageFolder.GetFolderFromPathAsync(file.Path.Replace(file.Name, ""));
-                        file = await f.CreateFileAsync(file.Name.Replace(".png", ".psd"), CreationCollisionOption.OpenIfExists);
-                        await SavePSD(file, ls, x, y);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    break;
-                case ".psd":
-                    await SavePSD(file, ls, x, y);
-                    try
-                    {
-                        var f2 = await StorageFolder.GetFolderFromPathAsync(file.Path.Replace(file.Name, ""));
-                        file = await f2.CreateFileAsync(file.Name.Replace(".psd", ".png"), CreationCollisionOption.OpenIfExists);
+            }
+            try
+            {
+                WriteableBitmap ot = new WriteableBitmap(x, y);
+                foreach (var item in ls.Reverse())
+                {
+                    if (!item.IsShow) continue;
+                    IGrap.addImg(item.Bitmap, ot, (int)item.X, (int)item.Y, item.Opacity);
+                }
+                switch (file.FileType.ToLower())
+                {
+                    case ".jpg":
+                        await SaveIMG(ot, file, BitmapEncoder.JpegEncoderId);
+                        break;
+                    case ".gif":
+                        await SaveIMG(ot, file, BitmapEncoder.GifEncoderId);
+                        return; //xuy 
+                    case ".png":
                         await SaveIMG(ot, file, BitmapEncoder.PngEncoderId);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    break;
-                default:
-                    throw new Exception("ntype");
+                        if (f != null)
+                        {
+                            file = await f.CreateFileAsync(file.Name.Replace(".png", ".psd"), CreationCollisionOption.OpenIfExists);
+                            await SavePSD(file, ls, x, y);
+                        }
+                        break;
+                    case ".psd":
+                        await SavePSD(file, ls, x, y); 
+                        if (f != null)
+                        {
+                            file = await f.CreateFileAsync(file.Name.Replace(".psd", ".png"), CreationCollisionOption.OpenIfExists);
+                            await SaveIMG(ot, file, BitmapEncoder.PngEncoderId);
+                        }
+                        break;
+                    default:
+                        throw new Exception("ntype");
+                }
+            }
+            catch (Exception e)
+            {
+                (new MessageDialog(e.ToString())).ShowAsync().ToString();
             }
 
             Loading = false;
@@ -303,6 +315,7 @@ namespace App2.Model
                 await d.FlushAsync();
             }
         }
+
         public async Task LoadPSD(StorageFile file, IList<LayerModel> ls, Action<int, int> d = null)
         {
             using (var stream = await file.OpenStreamForReadAsync())

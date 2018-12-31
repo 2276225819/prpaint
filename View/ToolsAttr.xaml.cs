@@ -73,7 +73,7 @@ namespace App2.View
 
         void SetSelected(ToolsModel e)
         {
-                    Attr.Template = null;
+            Attr.Template = null;
             switch (e)
             {
                 case ClipModel clip:
@@ -90,6 +90,11 @@ namespace App2.View
                     break;
                 case FillModel fill:
                     Attr.Template = FillAttr;
+                    Attr.DataContext = e;
+                    break;
+                case PickerModel pick:
+                case BuckerModel buck:
+                    Attr.Template = PickAttr;
                     Attr.DataContext = e;
                     break;
                 default:
