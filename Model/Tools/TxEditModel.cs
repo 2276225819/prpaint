@@ -114,7 +114,7 @@ namespace App2.Model.Tools
             var b = sender.CurrentLayer.Bitmap.Clone();
 
             var otxt = sender.CurrentLayer.Name;
-            var ntxt = Text + "\t" + Size + "\t" + FontName;
+            var ntxt = (child as TextBlock).Text + "\t" + Size + "\t" + FontName;
 
             var nb = new WriteableBitmap((int)Math.Ceiling(nr.Width), (int)Math.Ceiling(nr.Height));
             // IGrap.addImg(b, nb, -(int)Math.Floor(nr.X - or.Left), -(int)Math.Floor(nr.Y - or.Top));

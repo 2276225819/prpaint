@@ -39,7 +39,7 @@ namespace App2.Model
         bool state = false;
         public void setState(IModel m, bool value,LayerModel CurrentLayer)
         {
-            if (CurrentLayer == null || !CurrentLayer.IsEdit || !CurrentLayer.IsShow)
+            if (CurrentLayer == null)
             {
                 return;
             }

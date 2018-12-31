@@ -101,6 +101,10 @@ namespace App2.Model.Tools
         public override async void OnToolChange(IModel sender, bool state)
         {
             var layer = sender.CurrentLayer;
+            if ( !layer.IsEdit || !layer.IsShow)
+            {
+                return;
+            }
             if (layer.Bitmap == null)
             {
                 return;

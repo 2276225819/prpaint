@@ -410,28 +410,34 @@ namespace App2.View
 
         private void ROOT_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
-           //var f = e.GetCurrentPoint(null);
-           //CompositeTransform t = (CompositeTransform)DRAW.RenderTransform;
-           //CompositeTransform tt = (CompositeTransform)ROOT.RenderTransform;
-           //
-           //if (e.KeyModifiers == Windows.System.VirtualKeyModifiers.Control)
-           //{
-           //    t.ScaleY += f.Properties.MouseWheelDelta * 0.001;
-           //    t.ScaleX += f.Properties.MouseWheelDelta * 0.001;
-           //    return;
-           //}
-           //if (f.Properties.IsHorizontalMouseWheel)
-           //{
-           //    t.TranslateX -= f.Properties.MouseWheelDelta * tt.ScaleX;//为什么这样写？？？(水平翻转后坐标转换（竟然忘了 
-           //    t.CenterX = ROOT.ActualWidth / 2 - t.TranslateX;
-           //}
-           //else
-           //{
-           //    t.TranslateY += f.Properties.MouseWheelDelta;
-           //    t.CenterY = ROOT.ActualHeight / 2 - t.TranslateY;
-           //
-           //}
-           //
+            var f = e.GetCurrentPoint(null); 
+            var t = new CompositeTransform();
+            if (e.KeyModifiers == Windows.System.VirtualKeyModifiers.Control)
+            {
+                t.ScaleY += f.Properties.MouseWheelDelta * 0.001;
+                t.ScaleX += f.Properties.MouseWheelDelta * 0.001;
+                t.CenterX = f.Position.X;// ROOT.ActualWidth / 2;// - t.TranslateX;
+                t.CenterY = f.Position.Y;// ROOT.ActualHeight / 2;// - t.TranslateY;
+            }
+            else
+            {
+                if (f.Properties.IsHorizontalMouseWheel)
+                {
+                    t.TranslateX -= f.Properties.MouseWheelDelta;// * tt.ScaleX;//为什么这样写？？？(水平翻转后坐标转换（竟然忘了 
+                    t.CenterX = -ROOT.ActualWidth / 2 - t.TranslateX;
+                }
+                else
+                {
+                    t.TranslateY += f.Properties.MouseWheelDelta;
+                    t.CenterY = ROOT.ActualHeight / 2 - t.TranslateY;
+                }
+            }
+
+
+            var tg = new TransformGroup();
+            tg.Children.Add(CANVAS.RenderTransform);
+            tg.Children.Add(t);
+            CANVAS.RenderTransform = new MatrixTransform() { Matrix = tg.Value };
         }
 
          

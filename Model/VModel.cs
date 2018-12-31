@@ -43,11 +43,12 @@ namespace App2.Model
                     ColorList.Add(new SolidColorBrush(Color.FromData(item)));
                 }
             }
-            if (ColorList.Count < 2)
-            {
-                ColorList.Add(new SolidColorBrush { Color = Color.Random });
-                ColorList.Add(new SolidColorBrush { Color = Color.Random });
-                ColorList.Add(new SolidColorBrush { Color = Color.Random });
+            if (ColorList.Count < 1)
+            { 
+                foreach(var i in App1.Vendor.ColorList.List())
+                {
+                    ColorList.Add(new SolidColorBrush { Color = Color.FromData(i) }); 
+                } 
             }
             if ((Data["MainColor"] is string a) && (Data["BackColor"] is string b))
             {
@@ -159,8 +160,8 @@ namespace App2.Model
                 //     X = -100,
                 //     Y = 300,
                 // });
-                vm.CurrentLayer = vm.LayerList[0];
             }
+            vm.CurrentLayer = vm.LayerList[0];
         }
 
         public void OnChangeTools(object sender, RoutedEventArgs args)

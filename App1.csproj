@@ -125,6 +125,7 @@
     <Compile Include="Model\Tools\TxEditModel.cs" />
     <Compile Include="Model\Tools\TextModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Vendor\ColorList.cs" />
     <Compile Include="Vendor\Exec.cs" />
     <Compile Include="Vendor\Graphics.cs" />
     <Compile Include="Vendor\Graphics8.cs" />

@@ -13,15 +13,13 @@
         </Style> 
     </Page.Resources>
     <ScrollViewer>
-
-        <StackPanel  Background="#FFAAAAAA"  Margin="10">
-
-            <TextBlock Margin="0,0,0,10" FontSize="24" x:Uid="p_m_setting_tt1" >Setting</TextBlock>
+        <StackPanel Margin="10">
+            <TextBlock Margin="0,0,0,10" FontSize="24" x:Uid="p_m_setting_tt1" Text="Setting"  ></TextBlock> 
             <ToggleSwitch Name="t0" x:Uid="p_m_setting_t0"  Header="禁用触摸" Toggled="ToggleSwitch_Toggled" />
             <ToggleSwitch Name="t1" x:Uid="p_m_setting_t1"  Header="菜单栏上方停靠" Toggled="ToggleSwitch_Toggled_1" />
             <ToggleSwitch Name="t2" x:Uid="p_m_setting_t2"  Header="工具面板左方停靠" Toggled="ToggleSwitch_Toggled_2" />
             <ToggleSwitch Name="t3" x:Uid="p_m_setting_t3"  Header="画布旋转" Toggled="ToggleSwitch_Toggled_3" />
-
+            <!-- http://blog.sina.com.cn/s/blog_7d9769740100sb6j.html ihosh -->
         </StackPanel>
     </ScrollViewer>
 </Page>
