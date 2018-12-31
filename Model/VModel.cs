@@ -297,7 +297,7 @@ namespace App2.Model
             {
                 stream.SetLength(0);
                 var d = await BitmapEncoder.CreateAsync(type, stream.AsRandomAccessStream());
-                d.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
+                d.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied,
                     (uint)ot.PixelWidth, (uint)ot.PixelHeight, 96, 96,
                     ot.PixelBuffer.ToArray());
                 await d.FlushAsync();
@@ -390,8 +390,15 @@ namespace App2.Model
 
         public async Task<Encoding> GetLocalEncode()
         {
-            var cname = await (new WebView()).InvokeScriptAsync("eval", new[] { "document.charset" });
-            return Encoding.GetEncoding(cname);
+            try
+            {
+                var cname = await (new WebView()).InvokeScriptAsync("eval", new[] { "document.charset" });
+                return Encoding.GetEncoding(cname);
+            }
+            catch (Exception)
+            {
+                return Encoding.ASCII;
+            }
         }
 
 

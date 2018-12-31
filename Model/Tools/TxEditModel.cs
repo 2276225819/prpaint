@@ -46,7 +46,8 @@ namespace App2.Model.Tools
             Text = t[0];
             Size = t.Length > 1 ? double.Parse(t[1]) : 10;
             var ff = t.Length > 2 ? t[2].TrimEnd('\0') : "";
-            if(Fonts.IndexOf(ff) != -1){
+            if(Fonts.IndexOf(ff) != -1)
+            {
                 FontName = ff;
             }
             else
@@ -55,12 +56,13 @@ namespace App2.Model.Tools
             }
             Debug.Write("ChangeName");
         }
-
+        Point p;
         public override void OnDrawing(IModel sender, PointerPoint args)
         {
             var e = sender.ElemArea.Child as TextBlock;
-            if (e == null) return;
-            e.RenderTransform = new TranslateTransform() { X = args.Position.X  , Y = args.Position.Y };
+            if (e == null) return; 
+            var o = sender.CurrentLayer;
+            e.RenderTransform = new TranslateTransform() { X = o.X + args.Position.X - p.X, Y = o.Y + args.Position.Y - p.Y };
         }
 
         public override void OnDrawRollback(IModel sender, PointerPoint args)
@@ -71,7 +73,11 @@ namespace App2.Model.Tools
 
         public override void OnDrawBegin(IModel sender, PointerPoint args)
         {
-            if (Text == null || Text.Length < 1) return;
+            OnLayerChange(sender);
+            if (Text == null || Text.Length < 1)
+            {
+                return;
+            } 
             base.OnDrawBegin(sender, args);
             Clipper.Points.Clear();
             sender.ElemArea.Child = Elem<TextBlock>(e => {
@@ -82,7 +88,8 @@ namespace App2.Model.Tools
                 //e.HorizontalTextAlignment = TextAlignment.Left;
                 //e.VerticalAlignment = VerticalAlignment.Center;
                 e.FontSize = Size;
-            }); 
+            });
+            p = args.Position;
         }
 
         public override async void OnDrawCommit(IModel sender, PointerPoint args)
@@ -135,11 +142,19 @@ namespace App2.Model.Tools
 
         }
 
-         
+        bool loc = false;
         public async void OnReflush()
         {
-            if (  tmpModel?.CurrentLayer?.Bitmap == null || Text==null) return;
-            await Task.Delay(100);//还没更新值
+            if (tmpModel?.CurrentLayer == null)
+            {
+                return;
+            }
+            if (loc)
+            {
+                return;
+            }
+            loc = true;
+            await Task.Delay(20);//还没更新值
             Debug.WriteLine("Text OnReflush");
 
             Clipper.Points.Clear();
@@ -156,8 +171,8 @@ namespace App2.Model.Tools
             tmpModel.ElemArea.Child = area;
             await doing(tmpModel, area);
             tmpModel.ElemArea.Child = null;
-             
 
+            loc = false;
         }
     }
 }

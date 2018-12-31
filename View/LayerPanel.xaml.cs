@@ -63,13 +63,16 @@ namespace App2.View
         {
             if (Items.Count == 1)
             {
+                var name = CurrentLayer.Name;
                 CurrentLayer.getRect(out Rect or, out WriteableBitmap ob);
                 LayerPaint.Exec.Do(new LayerPaint.Exec() {
                     exec = () => {
                         CurrentLayer.setRect(default(Rect), null);
+                        CurrentLayer.Name = "";
                     },
                     undo = () => {
                         CurrentLayer.setRect(or, ob);
+                        CurrentLayer.Name = name;
                     }
                 });
                 return;

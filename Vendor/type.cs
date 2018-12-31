@@ -343,6 +343,11 @@ namespace LayerPaint
             { 
                 try
                 {
+                    if(element.RenderSize.Height == 0 || element.RenderSize.Width == 0|| element.DesiredSize.Height == 0 || element.DesiredSize.Width == 0)
+                    {
+                        await Task.Delay(10);//等渲染
+                        continue;
+                    }
                     RenderTargetBitmap rtb = new RenderTargetBitmap();
                     await rtb.RenderAsync(element);
 

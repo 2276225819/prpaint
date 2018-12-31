@@ -59,7 +59,12 @@ namespace App2.Model
         public bool Loading
         {
             get { return (bool)GetValue(LoadingProperty); }
-            set { SetValue(LoadingProperty, value); Debug.WriteLine("Loading..."); }
+            set { SetValue(LoadingProperty, value);
+
+                Debug.WriteLine("---------------------------");
+                Debug.WriteLine(Environment.StackTrace);
+                Debug.WriteLine("---------------------------");
+            }
         }
 
         // Using a DependencyProperty as the backing store for Loading.  This enables animation, styling, binding, etc...

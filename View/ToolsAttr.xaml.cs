@@ -193,7 +193,7 @@ namespace App2.View
             {
                 var stream = new InMemoryRandomAccessStream();
                 var d = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-                d.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
+                d.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied,
                     (uint)ot.PixelWidth, (uint)ot.PixelHeight, 96, 96,
                     ot.PixelBuffer.ToArray());
                 await d.FlushAsync();
@@ -249,30 +249,16 @@ namespace App2.View
         {
             ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
         }
-        private void FontListBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
-        }
-        private void Slider_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
-        }
-         
-        private void Slider_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
-
-        }
-
-        private void Slider_PointerExited(object sender, PointerRoutedEventArgs e)
-        {
-            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
-
-        }
-
         private void FontListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if((sender as FrameworkElement).Parent != null)
+            {
+                ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+            } 
+        } 
+        private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if ((sender as FrameworkElement).Parent != null)
             {
                 ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
             }

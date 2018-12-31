@@ -146,9 +146,9 @@
         </ControlTemplate>
         <ControlTemplate x:Name="TextAttr">
             <StackPanel>
-                <TextBox Margin="0,5" x:Uid="p_t_text" Text="{Binding Text,Mode=TwoWay}" 
+                <TextBox Margin="0,5" x:Uid="p_t_text" Text="{Binding Text,Mode=TwoWay}"  MaxLength="200"
                          FontFamily="{Binding ElementName=FontListBox,Path=SelectedValue}"  AcceptsReturn="True"
-                         LostFocus="TextBox_LostFocus" MaxLength="200"
+                         LostFocus="TextBox_LostFocus"
                          ></TextBox>
                 <ComboBox Margin="0,5" x:Uid="p_t_fontfamily" x:Name="FontListBox"  HorizontalAlignment="Stretch" 
                           ItemsSource="{Binding Fonts,Mode=OneTime}" SelectedValue="{Binding FontName,Mode=TwoWay}" 
@@ -161,7 +161,7 @@
                     <TextBlock Text="xxx"></TextBlock>
                 </ComboBox>
                 <Slider Margin="0,5" x:Uid="p_t_fontsize" Value="{Binding Size,Mode=TwoWay}" Minimum="1"  Maximum="500"
-                        LostFocus="Slider_LostFocus"   PointerExited="Slider_PointerExited"
+                        ValueChanged="Slider_ValueChanged"
                         ></Slider>
             </StackPanel>
         </ControlTemplate>
