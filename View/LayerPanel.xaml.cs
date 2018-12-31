@@ -153,6 +153,10 @@ namespace App2.View
             _u.getRect(out Rect ur, out WriteableBitmap ub);
             _d.getRect(out Rect dr, out WriteableBitmap db);
             var exm = RectHelper.Union(ur, dr);
+            if (exm.IsEmpty)
+            {
+                return;//感谢反馈@microsoft
+            }
             var ex = new WriteableBitmap((int)exm.Width, (int)exm.Height);
             IGrap.addImg(db, ex, (int)(_d.X - exm.X), (int)(_d.Y - exm.Y), _d.Opacity);
             IGrap.addImg(ub, ex, (int)(_u.X - exm.X), (int)(_u.Y - exm.Y), _u.Opacity);
