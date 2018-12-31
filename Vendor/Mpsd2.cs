@@ -117,14 +117,19 @@ namespace ConsoleApp1
             }
             public bool Visable
             {
-                get { return flags != 10; }
-                set { flags = (byte)(value ? 8 : 10); }
+                get { return (flags & 0b10) == 0; }
+                //set { flags = (byte)(value ? 8 : 10); }
             }
-            public static System.Threading.Tasks.Task<Layer> CreateAsync(string name, int offx, int offy, int w, int h, byte alpha, bool show, Stream s)
+            public bool Editable
             {
-                return System.Threading.Tasks.Task.Run(() => Create(name, offx, offy, w, h, alpha, show, s));
+                get { return (flags & 0b1) == 0; }
+                //set { flags = (byte)(value ? 8 : 10); }
             }
-            public static Layer Create(string name, int offx, int offy, int w, int h, byte alpha, bool show, Stream s)
+            public static System.Threading.Tasks.Task<Layer> CreateAsync(string name, int offx, int offy, int w, int h, byte alpha, bool show,bool edit, Stream s)
+            {
+                return System.Threading.Tasks.Task.Run(() => Create(name, offx, offy, w, h, alpha, show,edit, s));
+            }
+            public static Layer Create(string name, int offx, int offy, int w, int h, byte alpha, bool show,bool edit, Stream s)
             {
                 var l = new Layer();
                 var cln = w * h;
@@ -138,7 +143,7 @@ namespace ConsoleApp1
                 l.Name = name;
                 l.clipping = 0;
                 l.Alpha = alpha;
-                l.flags = (byte)(show ? 8 : 10);
+                l.flags = (byte)(0b1000 | (show ? 0b0 : 0b10) | (edit ? 0b0 : 0b1));
                 byte[] b = new byte[ln];
                 s.Read(b, 0, (int)ln);
                 l.channel = 4;

@@ -47,6 +47,15 @@ namespace App2.Model.Tools
             lp = args.Position;
             cp = new Point(com.TranslateX + sender.CurrentLayer.W / 2, com.TranslateY + sender.CurrentLayer.H / 2);
         }
+        public override void OnDrawCommit(IModel sender, PointerPoint args)
+        {
+            type = T.NULL;
+        }
+        public override void OnDrawRollback(IModel sender, PointerPoint args)
+        {
+            type = T.NULL;
+        }
+
         public override void OnDrawing(IModel sender, PointerPoint args)
         {
             switch (type)
@@ -89,7 +98,7 @@ namespace App2.Model.Tools
         }
 
 
-        public override async void OnChangeState(IModel sender, bool state)
+        public override async void OnToolChange(IModel sender, bool state)
         {
             var layer = sender.CurrentLayer;
             if (layer.Bitmap == null)
@@ -152,7 +161,6 @@ namespace App2.Model.Tools
             else
             {
                 sender.ElemArea.Child = null;
-                type = T.NULL;
 
                 if (!ch) return;
                 VModel.vm.Loading = true;
@@ -214,8 +222,9 @@ namespace App2.Model.Tools
                     Color = Colors.Transparent
                 };
                 grid.PointerPressed += (s, e) => {
+                    if (type != T.NULL) return;
                     type = T.Move;
-                    e.Handled = true;
+                    //e.Handled = true;
                     Debug.WriteLine((s as FrameworkElement).Name);
                 };
                 grid.Children.Add(Elem<Border>(_ => {
@@ -223,8 +232,9 @@ namespace App2.Model.Tools
                     _.VerticalAlignment = VerticalAlignment.Top;
                     _.HorizontalAlignment = HorizontalAlignment.Left;
                     _.PointerPressed += (s, e) => {
+                        if (type != T.NULL) return;
                         type = T.Resize;
-                        e.Handled = true;
+                        //e.Handled = true;
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
@@ -233,8 +243,9 @@ namespace App2.Model.Tools
                     _.VerticalAlignment = VerticalAlignment.Top;
                     _.HorizontalAlignment = HorizontalAlignment.Right;
                     _.PointerPressed += (s, e) => {
+                        if (type != T.NULL) return;
                         type = T.Resize;
-                        e.Handled = true;
+                        //e.Handled = true;
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
@@ -243,8 +254,9 @@ namespace App2.Model.Tools
                     _.VerticalAlignment = VerticalAlignment.Bottom;
                     _.HorizontalAlignment = HorizontalAlignment.Left;
                     _.PointerPressed += (s, e) => {
+                        if (type != T.NULL) return;
                         type = T.Resize;
-                        e.Handled = true;
+                        //e.Handled = true;
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
@@ -253,8 +265,9 @@ namespace App2.Model.Tools
                     _.VerticalAlignment = VerticalAlignment.Bottom;
                     _.HorizontalAlignment = HorizontalAlignment.Right;
                     _.PointerPressed += (s, e) => {
+                        if (type != T.NULL) return;
                         type = T.Resize;
-                        e.Handled = true;
+                        //e.Handled = true;
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
@@ -264,6 +277,7 @@ namespace App2.Model.Tools
                 //    _.VerticalAlignment = VerticalAlignment.Center;
                 //    _.HorizontalAlignment = HorizontalAlignment.Left;
                 //    _.PointerPressed += (s, e) => {
+                //        if (type != T.NULL) return;
                 //        type = T.Resize;
                 //        e.Handled = true;
                 //        Debug.WriteLine((s as FrameworkElement).Name);
@@ -282,8 +296,9 @@ namespace App2.Model.Tools
                     _.VerticalAlignment = VerticalAlignment.Top;
                     _.HorizontalAlignment = HorizontalAlignment.Center; 
                     _.PointerPressed += (s, e) => {
+                        if (type != T.NULL) return;
                         type = T.Rotate;
-                        e.Handled = true;
+                        //e.Handled = true;
                         Debug.WriteLine((s as FrameworkElement).Name);
                     };
                 }));
@@ -293,8 +308,9 @@ namespace App2.Model.Tools
                     _.HorizontalAlignment = HorizontalAlignment.Right;
                     _.Y1 = 30; 
                     _.PointerPressed += (s, e) => {
+                        if (type != T.NULL) return;
                         type = T.ResizeH;
-                        e.Handled = true;
+                        //e.Handled = true;
                         Debug.WriteLine((s as FrameworkElement).Name);
 
                     };
@@ -305,8 +321,9 @@ namespace App2.Model.Tools
                     _.HorizontalAlignment = HorizontalAlignment.Center;
                     _.X1 = 30; 
                     _.PointerPressed += (s, e) => {
+                        if (type != T.NULL) return;
                         type = T.ResizeV;
-                        e.Handled = true;
+                        //e.Handled = true;
                         Debug.WriteLine((s as FrameworkElement).Name);
 
                     };

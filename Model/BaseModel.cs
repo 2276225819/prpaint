@@ -15,6 +15,7 @@ using Windows.Foundation;
 using Windows.Devices.Input;
 using App2.Model.Tools;
 using App2.View;
+using System.Diagnostics;
 
 namespace App2.Model
 {
@@ -58,7 +59,7 @@ namespace App2.Model
         public bool Loading
         {
             get { return (bool)GetValue(LoadingProperty); }
-            set { SetValue(LoadingProperty, value); }
+            set { SetValue(LoadingProperty, value); Debug.WriteLine("Loading..."); }
         }
 
         // Using a DependencyProperty as the backing store for Loading.  This enables animation, styling, binding, etc...
@@ -77,7 +78,7 @@ namespace App2.Model
         public LayerModel CurrentLayer
         {
             get { return (LayerModel)GetValue(CurrentLayerProperty); }
-            set { SetValue(CurrentLayerProperty, value);  }
+            set { SetValue(CurrentLayerProperty, value); CurrentTools?.OnLayerChange(DrawPanel.Current);  }
         }
 
         // Using a DependencyProperty as the backing store for CurrentLayer.  This enables animation, styling, binding, etc...

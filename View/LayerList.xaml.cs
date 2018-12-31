@@ -100,18 +100,19 @@ namespace App2.View
         private void Grid_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var model = (sender as FrameworkElement).DataContext as LayerModel;
-            var d = new ContentDialog() { PrimaryButtonText="Ok" };
+            var d = new ContentDialog() { PrimaryButtonText="Ok" , CloseButtonText="Cancel"  };
             var s = new StackPanel();
-            var h = new TextBlock() { Text = "rename" };
-            var t = new TextBox() { Text = model.Name };
+            var h = new TextBlock() { Text = "rename"  };
+            var t = new TextBox() { AcceptsReturn = true ,};
             s.Children.Add(h);   
             s.Children.Add(t);
             d.Content = s;
             d.ShowAsync().AsTask();
             d.PrimaryButtonClick += (ss, ee)=>{
                 model.Name = t.Text;
-            };
+            }; 
             
+            t.Text = model.Name;//不换号bug  不会修
         }
     }
 }

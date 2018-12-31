@@ -320,6 +320,7 @@ namespace App2.Model
                         ls.Insert(0, new LayerModel() {
                             Name = layer.Name,
                             IsShow = layer.Visable,
+                            IsEdit = layer.Editable,
                             Opacity = layer.Alpha / 255d,
                             X = (double)layer.Left,
                             Y = (double)layer.Top,
@@ -349,7 +350,7 @@ namespace App2.Model
                 if (item.Bitmap == null)
                 {
                     tt[i] = ConsoleApp1.Mpsd2.Layer.CreateAsync(item.Name, (int)item.X, (int)item.Y,
-                            0, 0, (byte)(item.Opacity * 255d), item.IsShow, new MemoryStream());
+                            0, 0, (byte)(item.Opacity * 255d), item.IsShow,item.IsEdit, new MemoryStream());
                 }
                 else
                 {
@@ -359,8 +360,10 @@ namespace App2.Model
                     {
                         throw null;
                     }
+                    if (item.Name.Length > 255) item.Name = item.Name.Substring(0, 255);
+                    //if (item.Name.Length == 0) item.Name = ".";
                     tt[i] = ConsoleApp1.Mpsd2.Layer.CreateAsync(item.Name, (int)item.X, (int)item.Y,
-                            b.PixelWidth, b.PixelHeight, (byte)(item.Opacity * 255d), item.IsShow, sm);
+                            b.PixelWidth, b.PixelHeight, (byte)(item.Opacity * 255d), item.IsShow, item.IsEdit, sm);
                 }
             }
             var ttt = await Task.WhenAll(tt);

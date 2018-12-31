@@ -201,6 +201,20 @@ namespace App2.View
                 }, true);
 
             }).ToString();
+
+            //BUG 丢指针后重置
+            //var check = false;
+            this.ManipulationCompleted += (s, e) => {
+                if (  State == MyEnum.Draw) return;
+                    Ev.Clear(); Debug.WriteLine("COMPLETE");
+                //check = true;
+                //await Task.Delay(300);
+                //if (State != MyEnum.Draw)
+                //{
+                //   
+                //}
+                //check = false;
+            };
         }
 
 
@@ -420,75 +434,6 @@ namespace App2.View
            //
         }
 
-
-
-
-        class NumberOfTouchPointsDetector
-        {
-            #region Fields
-            public readonly HashSet<uint> _pointers = new HashSet<uint>();
-            readonly UIElement _uiElement;
-            #endregion 
-
-            public NumberOfTouchPointsDetector(UIElement uiElement)
-            {
-                _uiElement = uiElement;
-                _uiElement.PointerPressed += PointerPressed;
-                _uiElement.PointerReleased += PointerReleased;
-                _uiElement.PointerExited += PointerExited;
-                _uiElement.PointerEntered += PointerEntered;
-                _uiElement.PointerCaptureLost += PointerCaptureLost;
-                _uiElement.PointerCanceled += PointerCanceled;
-            }
-
-
-
-            ~NumberOfTouchPointsDetector()
-            {
-                _uiElement.PointerPressed -= PointerPressed;
-                _uiElement.PointerReleased -= PointerReleased;
-                _uiElement.PointerExited -= PointerExited;
-                _uiElement.PointerEntered -= PointerEntered;
-                _uiElement.PointerCaptureLost -= PointerCaptureLost;
-                _uiElement.PointerCanceled -= PointerCanceled;
-            }
-
-            #region private
-            private void PointerPressed(object sender, PointerRoutedEventArgs e)
-            {
-                _pointers.Add(e.Pointer.PointerId);
-            }
-
-            private void PointerReleased(object sender, PointerRoutedEventArgs e)
-            {
-                _pointers.Remove(GetPoint(e));
-            }
-
-            private void PointerExited(object sender, PointerRoutedEventArgs e)
-            {
-                _pointers.Remove(GetPoint(e));
-            }
-
-            private void PointerEntered(object sender, PointerRoutedEventArgs e)
-            {
-                _pointers.Add(GetPoint(e));
-            }
-
-            private void PointerCaptureLost(object sender, PointerRoutedEventArgs e)
-            {
-                _pointers.Remove(GetPoint(e));
-            }
-
-            private void PointerCanceled(object sender, PointerRoutedEventArgs e)
-            {
-                _pointers.Clear();
-            }
-
-            uint GetPoint(PointerRoutedEventArgs e)
-            {
-                return e.GetCurrentPoint(_uiElement).PointerId;
-            }
-            #endregion
-        }
+         
     }
 }

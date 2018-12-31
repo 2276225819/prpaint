@@ -39,6 +39,11 @@ namespace App2.View
                     SetSelected((ToolsModel)s.GetValue(e));
                 });
 
+
+                VModel.vm.RegisterPropertyChangedCallback(VModel.CurrentLayerProperty, async (s, e) => {
+                    await Task.Yield();
+                    SetSelected(VModel.vm.CurrentTools);
+                });
                 SetSelected(VModel.vm.CurrentTools);
 
 
@@ -68,6 +73,7 @@ namespace App2.View
 
         void SetSelected(ToolsModel e)
         {
+                    Attr.Template = null;
             switch (e)
             {
                 case ClipModel clip:
@@ -78,7 +84,7 @@ namespace App2.View
                     Attr.Template = PenAttr;
                     Attr.DataContext = e;
                     break;
-                case TextModel text:
+                case TxEditModel text:
                     Attr.Template = TextAttr;
                     Attr.DataContext = e;
                     break;
@@ -87,7 +93,6 @@ namespace App2.View
                     Attr.DataContext = e;
                     break;
                 default:
-                    Attr.Template = null;
                     break;
             }
         }
@@ -139,9 +144,7 @@ namespace App2.View
         {
             if (loc) return;
             loc = true;
-            Dispatcher.RunIdleAsync(async x => {
-
-
+            Dispatcher.RunIdleAsync(async x => { 
                 Debug.WriteLine("ATTR");
                 var t = CurrentTools as PenModel;
                 if (t != null)
@@ -240,6 +243,40 @@ namespace App2.View
            //var b = VModel.vm.CurrentTools;
 
 
-        } 
+        }
+          
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+        }
+        private void FontListBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+        }
+        private void Slider_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+        }
+         
+        private void Slider_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+
+        }
+
+        private void Slider_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+
+        }
+
+        private void FontListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if((sender as FrameworkElement).Parent != null)
+            {
+                ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+            }
+
+        }
     }
 }

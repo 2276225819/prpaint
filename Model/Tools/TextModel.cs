@@ -67,17 +67,21 @@ namespace App2.Model.Tools
 
             VModel.vm.Loading = true;
              
-            sender.CurrentLayer.getRect(out Rect or, out WriteableBitmap ob);
             var rb = await (area.Child as FrameworkElement).Render();
-            if (rb!=null)
+            do
             {
+                if (rb == null) break;
+
+                sender.CurrentLayer.getRect(out Rect or, out WriteableBitmap ob);
                 var layer = sender.CurrentLayer;
                 var pos = (area.Child as FrameworkElement).RenderTransform as TranslateTransform;
                 var rect = new Rect(pos.X, pos.Y, rb.PixelWidth, rb.PixelHeight);
                 var nr = RectHelper.Intersect(or.IsEmpty ? rect : RectHelper.Union(rect, or), DrawRect);
+
                 var i = sender.Layers.IndexOf(layer);
                 var b = sender.CurrentLayer.Bitmap.Clone();
 
+                if (nr.IsEmpty) break;
 
                 var nb = new WriteableBitmap((int)Math.Ceiling(nr.Width), (int)Math.Ceiling(nr.Height));
                 IGrap.addImg(b, nb, -(int)Math.Floor(nr.X - or.Left), -(int)Math.Floor(nr.Y - or.Top));
@@ -93,7 +97,7 @@ namespace App2.Model.Tools
                         sender.CurrentLayer = sender.Layers[i];
                     }
                 });
-            }
+            } while (false);
             VModel.vm.Loading = false;
             sender.ElemArea.Child = null;
 

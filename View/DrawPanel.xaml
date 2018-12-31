@@ -21,12 +21,12 @@
     <Grid x:Name="ROOT"  Background="Transparent"
            ManipulationMode="All" 
           PointerWheelChanged="ROOT_PointerWheelChanged" 
-          PointerEntered="OnEnter"
-          PointerExited="OnExited" 
-          PointerCaptureLost="OnExited"
+          PointerPressed="OnEnter"
+          PointerReleased="OnExited"  
           PointerMoved="OnMoved"   
           ManipulationDelta="OnDragDraw" 
           >
+        <!-- PointerCaptureLost="OnExited"-->
         <Canvas x:Name="CANVAS" > 
 
             <ItemsControl x:Name="LAYS" ItemsSource="{x:Bind Layers,Mode=OneWay}"   >
@@ -76,7 +76,7 @@
                 </Border>
 
             </ItemsControl>
-            <Border x:Name="GRAPHIC" >
+            <Border x:Name="GRAPHIC" HorizontalAlignment="Left" VerticalAlignment="Top"  >
 
             </Border>
  

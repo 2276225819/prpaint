@@ -59,7 +59,7 @@
                         <TextBlock  VerticalAlignment="Center" FontSize="12"   Text="{Binding Opacity ,Converter={StaticResource cc}}" >100%</TextBlock>
                     </StackPanel>
 
-                    <TextBlock Padding="6,3"  FontSize="14"  Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2"  MaxLines="10"  Text="{Binding Name}" LineStackingStrategy="MaxHeight"   >xxx</TextBlock>
+                    <TextBlock Padding="6,3"  FontSize="14"  Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2"  MaxLines="1"  Text="{Binding Name}" LineStackingStrategy="MaxHeight"   >xxx</TextBlock>
                 </Grid>
             </DataTemplate>
         </ListView.ItemTemplate>

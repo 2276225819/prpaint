@@ -339,8 +339,8 @@ namespace LayerPaint
 
         public static async Task<WriteableBitmap> Render(this FrameworkElement element)
         {
-            while (true)
-            {
+            for (int i = 0; i < 3; i++)
+            { 
                 try
                 {
                     RenderTargetBitmap rtb = new RenderTargetBitmap();
@@ -367,7 +367,9 @@ namespace LayerPaint
                 }
                 await Task.Delay(1000);
             }
+            return null;
         }
+
     }
     public struct Color
     {
