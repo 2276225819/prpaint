@@ -47,9 +47,7 @@ namespace LayerPaint
             return b;
         }
         public static string Count { get { return undos.Count.ToString(); } }
-        public static int RedoCount { get { return redos.Count; } }
         public static void Clean() { undos.Clear(); redos.Clear(); }
-        public static void CleanRedo() { redos.Clear(); }
         public static void Sep(int len)
         {
             len = Math.Min(undos.Count, len);

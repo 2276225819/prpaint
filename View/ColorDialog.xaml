@@ -10,8 +10,8 @@
 
         <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20,0"  >
 
-            <view:ColorRing MainBrush="{x:Bind MainBrush}" Margin="0,0,0,10"></view:ColorRing>
-            <view:ColorPanel MainBrush="{x:Bind MainBrush}"></view:ColorPanel>
+            <view:ColorRing x:Name="CR" Margin="0,0,0,10"></view:ColorRing>
+            <view:ColorPanel x:Name="CP"></view:ColorPanel>
             <Grid  Margin="0,0,0,10" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>

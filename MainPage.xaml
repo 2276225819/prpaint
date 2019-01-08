@@ -135,7 +135,7 @@
                 </Grid>
             </SplitView.Pane>
         </SplitView>
-        <AppBar ClosedDisplayMode="Compact" IsSticky="True" Name="Cmd" >
+        <AppBar ClosedDisplayMode="Compact" IsSticky="True" Name="Cmd" DoubleTapped="OnDoubleTap"   >
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
                     <AppBarButton x:Uid="c_undo" Label="undo" Icon="Undo" Click="BarUndo_Tapped" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"   />
@@ -143,14 +143,15 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
                     <AppBarButton Label="{x:Bind vm.MainBrush.Color,Mode=OneWay,Converter={StaticResource cc}}" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"
-                              Tapped="{x:Bind vm.OnChangeColor}" >
+                              Tapped="{x:Bind vm.OnChangeColor}" RightTapped="AppBarButton_RightTapped" 
+                                  >
                         <Grid Width="20" Height="20"  >
                             <Rectangle Width="16" Height="16" Fill="{x:Bind vm.BackBrush}" HorizontalAlignment="Left" VerticalAlignment="Top"></Rectangle>
                             <Rectangle Width="16" Height="16" Fill="{x:Bind vm.MainBrush}" HorizontalAlignment="Right" VerticalAlignment="Bottom"></Rectangle>
                         </Grid>
                     </AppBarButton>
                     <AppBarButton Label="{x:Bind vm.CurrentTools.Name,Mode=OneWay}" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"
-                              Tapped="{x:Bind vm.OnChangeTools}"  >
+                              Tapped="{x:Bind vm.OnChangeTools}" RightTapped="AppBarButton_RightTapped_1"  >
                         <Grid Width="20" Height="20" >
                             <BitmapIcon  UriSource="{x:Bind vm.CurrentTools.Icon,Mode=OneWay}"  Width="40" Height="40"
                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-10"  />
@@ -162,7 +163,8 @@
                             </Border>
                         </Grid>
                     </AppBarButton>
-                    <AppBarButton  Label="flip" Icon="Switch" Tapped="BarLayer_Tapped" DoubleTapped="AppBarButton_DoubleTapped" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}" ></AppBarButton>
+                    <AppBarButton  Label="flip" Icon="Switch" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"
+                                   Tapped="BarLayer_Tapped"  RightTapped="AppBarButton_RightTapped_2"></AppBarButton>
 
                 </StackPanel>
             </Grid>
@@ -178,9 +180,9 @@
 IsActive
         </ProgressBar>
         <Button Click="Button_Click" HorizontalAlignment="Center" Width="100" Height="100"></Button>-->
-        <Grid  Visibility="{x:Bind vm.Loading,Mode=OneWay,Converter={StaticResource bb}}" Background="#33000000">
+        <Grid Visibility="{x:Bind vm.Loading,Mode=OneWay,Converter={StaticResource bb}}" Background="#33000000">
             <ProgressRing IsActive="True" Width="60" Height="60"  />
         </Grid>
-
+        <!--  <SymbolIcon Symbol="Highlight"   />-->
     </Grid>
 </Page>

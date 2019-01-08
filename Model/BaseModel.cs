@@ -61,9 +61,9 @@ namespace App2.Model
             get { return (bool)GetValue(LoadingProperty); }
             set { SetValue(LoadingProperty, value);
 
-                Debug.WriteLine("---------------------------");
-                Debug.WriteLine(Environment.StackTrace);
-                Debug.WriteLine("---------------------------");
+                //Debug.WriteLine("---------------------------");
+                //Debug.WriteLine(Environment.StackTrace);
+                //Debug.WriteLine("---------------------------");
             }
         }
 

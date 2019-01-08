@@ -20,17 +20,14 @@ namespace LayerPaint
 {
     public sealed partial class ColorDialog : ContentDialog
     {
-        public SolidColorBrush MainBrush { get; set; }
-        public SolidColorBrush BackBrush { get; set; }
-
         public ColorDialog(VModel d)
         {
             this.InitializeComponent();
-            MainBrush = new SolidColorBrush(d.MainBrush.Color);
+            CR.MainBrush = CP.MainBrush = new SolidColorBrush(d.MainBrush.Color); 
             
             //新建
             First.Click += (s, e) => {
-                d.MainBrush.Color = MainBrush.Color;
+                d.MainBrush.Color = CR.MainBrush.Color;
                 base.Hide();
             }; 
             //取消

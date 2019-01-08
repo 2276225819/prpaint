@@ -267,7 +267,7 @@
   <data name="p_t_shape.Header" xml:space="preserve">
     <value>形状</value>
   </data>
-  <data name="p_t_all_layer" xml:space="preserve">
+  <data name="p_t_all_layer.Header" xml:space="preserve">
     <value>所有图层</value>
   </data>
 </root>

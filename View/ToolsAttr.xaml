@@ -24,7 +24,7 @@
                     <GridViewItem Tapped="OnPenAttr4">→</GridViewItem>
                 </StackPanel>
                 <Image Width="200" Height="100" Source="{Binding tmp}"></Image>
-                <TextBox x:Uid="p_t_name" Header="name" Text="{Binding Name,Mode=OneWay}" TextChanged="TextBox_TextChanged"  Margin="0,0,0,8"></TextBox>
+                <TextBox x:Uid="p_t_name" Header="name" Text="{Binding Name,Mode=OneWay}" TextWrapping="Wrap" TextChanged="TextBox_TextChanged"  Margin="0,0,0,8"></TextBox>
                 <!--
                 <Slider Value="{Binding opacity,Mode=TwoWay}" x:Uid="p_t_opacity" Header="opacity" Maximum="1" Minimum="0.01" StepFrequency="0.01"></Slider>
 -->
@@ -147,7 +147,7 @@
         <ControlTemplate x:Name="TextAttr">
             <StackPanel>
                 <TextBox Margin="0,5" x:Uid="p_t_text" Text="{Binding Text,Mode=TwoWay}" 
-                         AcceptsReturn="True" MaxLength="200"
+                         AcceptsReturn="True" MaxLength="200" TextWrapping="Wrap"  
                          LostFocus="TextBox_LostFocus"
                          ></TextBox>
                 <ComboBox Margin="0,5" x:Uid="p_t_fontfamily" x:Name="FontListBox"  HorizontalAlignment="Stretch" 

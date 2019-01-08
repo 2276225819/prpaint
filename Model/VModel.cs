@@ -28,6 +28,7 @@ namespace App2.Model
     {
         public static string vfn;
         public static VModel vm;
+        Encoding encoding;
         public VModel()
         {
             vm = this;
@@ -98,11 +99,11 @@ namespace App2.Model
                 Data["MainColor"] = Color.ToData(MainBrush.Color);
                 Data["BackColor"] = Color.ToData(BackBrush.Color);
             };
-
-
         }
         public async void act()
         {
+            encoding = await GetLocalEncode();
+
             StorageFile tmp = null;
 
             if (vfn != null)
@@ -320,42 +321,35 @@ namespace App2.Model
         {
             using (var stream = await file.OpenStreamForReadAsync())
             {
-                var psd = new ConsoleApp1.Mpsd2() { encode = await GetLocalEncode() };
+                var psd = new ConsoleApp1.Mpsd2() { encode = encoding };
                 psd.load(stream);
                 d?.Invoke(psd.head.width, psd.head.height);
                 foreach (var layer in psd.layerdata)
                 {
                     int w = layer.Width, h = layer.Height;
+                    WriteableBitmap b = null;
                     if (w > 0 && h > 0)
                     {
-                        var b = new WriteableBitmap(w, h);
+                        b = new WriteableBitmap(w, h);
                         var bt = layer.getBGRA(w, h);
                         b.PixelBuffer.AsStream().Write(bt, 0, bt.Length);
-                        ls.Insert(0, new LayerModel() {
-                            Name = layer.Name,
-                            IsShow = layer.Visable,
-                            IsEdit = layer.Editable,
-                            Opacity = layer.Alpha / 255d,
-                            X = (double)layer.Left,
-                            Y = (double)layer.Top,
-                            Bitmap = b
-                        });
                     }
-                    else
-                    {
-                        ls.Insert(0, new LayerModel() {
-                            Name = layer.Name,
-                            IsShow = layer.Visable,
-                            Opacity = layer.Alpha / 255d, 
-                        });
-                    }
+                    ls.Insert(0, new LayerModel() {
+                        Name = layer.Name,
+                        IsShow = layer.Visable,
+                        IsEdit = layer.Editable,
+                        Opacity = layer.Alpha / 255d,
+                        X = (double)layer.Left,
+                        Y = (double)layer.Top,
+                        Bitmap = b
+                    });
                 }
             }
         }
 
         public async Task SavePSD(StorageFile file, IList<LayerModel> ls, int w, int h)
         {
-            var psd = new ConsoleApp1.Mpsd2() { encode = await GetLocalEncode()};
+            var psd = new ConsoleApp1.Mpsd2() { encode = encoding};
             psd.head = ConsoleApp1.Mpsd2.Head.Create(w, h);
             var tt = new Task<ConsoleApp1.Mpsd2.Layer>[ls.Count];
             for (int i = 0; i < ls.Count; i++)
@@ -380,7 +374,7 @@ namespace App2.Model
                             b.PixelWidth, b.PixelHeight, (byte)(item.Opacity * 255d), item.IsShow, item.IsEdit, sm);
                 }
             }
-            var ttt = await Task.WhenAll(tt);
+            var ttt = Task.WhenAll(tt).GetAwaiter().GetResult();
             for (int i = 0; i < ttt.Length; i++)
             { 
                 psd.layerdata.Insert(0, ttt[i]);

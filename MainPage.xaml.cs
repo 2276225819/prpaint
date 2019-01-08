@@ -92,7 +92,7 @@ namespace App2
             //Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en";//test
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
-
+            
             ((Action)async delegate {
               
                 while (true)
@@ -218,18 +218,10 @@ namespace App2
 
 
 
-        private void BarLayer_Tapped(object sender, RoutedEventArgs e)
-        {
-            DRAW.FlipPanel(); 
-        } 
-        private void AppBarButton_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            DRAW.ResizePanel();
-        }
 
         public async void OnCreate(object sender, RoutedEventArgs e)
         {
-            await new LayerPaint.NewFileDialog(vm).ShowAsync();//新画板
+            await ShowDialog(new LayerPaint.NewFileDialog(vm).ShowAsync);//新画板
         }
         public async void OnSave(object sender, RoutedEventArgs e)
         {
@@ -247,7 +239,7 @@ namespace App2
             openPicker.FileTypeFilter.Add(".jpeg");
             openPicker.FileTypeFilter.Add(".jpg");
             openPicker.FileTypeFilter.Add(".png");
-            var files = await openPicker.PickMultipleFilesAsync();
+            var files = await ShowDialog(openPicker.PickMultipleFilesAsync);
 
             vm.Loading = true;
             List<LayerModel> ls = new List<LayerModel>();
@@ -282,7 +274,7 @@ namespace App2
             picker.FileTypeChoices.Add("jpg", new List<string>() { ".jpg" });
             picker.FileTypeChoices.Add("gif", new List<string>() { ".gif" });
             picker.FileTypeChoices.Add("png", new List<string>() { ".png" });
-            var file = await picker.PickSaveFileAsync();
+            var file = await ShowDialog(picker.PickSaveFileAsync);
             if (file == null)
             {
                 return;
@@ -292,8 +284,7 @@ namespace App2
             await vm.SaveFile(file, vm.LayerList, W, H);
         }
         public void OnSetting(object sender, RoutedEventArgs e)
-        { 
-            
+        {
             Frame.Navigate(typeof(Setting));
         }
 
@@ -342,29 +333,42 @@ namespace App2
             ApplicationView.GetForCurrentView().TryEnterViewModeAsync(mode).ToString();
         }
 
-
-        class ByteColor
+        private void BarLayer_Tapped(object sender, RoutedEventArgs e)
         {
-            byte a, r, g, b;
-            byte A { get; set; }
-            byte R { get; set; }
-            byte G { get; set; }
-            byte B { get; set; }
-            public void Multiply(ByteColor c)
-            {
-                r = (byte)Math.Max(0, r + c.r);
-                g = (byte)Math.Max(0, g + c.g);
-                b = (byte)Math.Max(0, b + c.b);
-                a = (byte)Math.Min(255, a + c.a);
-            } 
-            public void Normal(ByteColor c)
-            {
-
-            }
+            DRAW.FlipPanel();
         }
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
 
+        private void AppBarButton_RightTapped_2(object sender, RightTappedRoutedEventArgs e)
+        { 
+            DRAW.ResizePanel();
+        }
+
+        private async void AppBarButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            await ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync); 
+        }
+
+        private async void AppBarButton_RightTapped_1(object sender, RightTappedRoutedEventArgs e)
+        {
+            await ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+        }
+
+        private async void OnDoubleTap(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (e.OriginalSource is Grid)
+                await ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+        }
+
+
+        static Task a = Task.FromResult(0);
+        public static async Task<T> ShowDialog<T>(Func<IAsyncOperation<T>> aa) 
+        {
+            var last = a;
+            var next = a = new Task(() => { });
+            await last;
+            var result = await aa(); 
+            next.Start();
+            return result;
         }
     }
 }
