@@ -74,6 +74,10 @@ namespace App2
     public sealed partial class MainPage : Page  
     { 
         public static MainPage Current => (Window.Current.Content as Frame).Content as MainPage;
+        public static void flushtoolattr()
+        {
+            Current.DF.SetSelected(VModel.vm.CurrentTools);
+        }
         public Windows.UI.Color MainColor
         {
             get => vm.MainBrush.Color;
@@ -92,7 +96,7 @@ namespace App2
             //Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en";//test
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
-            
+
             ((Action)async delegate {
               
                 while (true)
@@ -219,16 +223,16 @@ namespace App2
 
 
 
-        public async void OnCreate(object sender, RoutedEventArgs e)
+        public void OnCreate(object sender, RoutedEventArgs e)
         {
-            await ShowDialog(new LayerPaint.NewFileDialog(vm).ShowAsync);//新画板
+            _ = ShowDialog(new LayerPaint.NewFileDialog(vm).ShowAsync);//新画板
         }
         public async void OnSave(object sender, RoutedEventArgs e)
         {
             var W = Convert.ToInt32(vm.DrawRect.Width);
             var H = Convert.ToInt32(vm.DrawRect.Height);
             await vm.SaveFile(await vm.CurrentFile, vm.LayerList, W, H);
-            await vm.backup();
+            vm.backup();
         }
         public async void OnImport(object sender, RoutedEventArgs e)
         {
@@ -338,35 +342,50 @@ namespace App2
             DRAW.FlipPanel();
         }
 
+        private void AppBarButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            _ = ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+        }
+        private void AppBarButton_DragTapped(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.IsInContact)
+            {
+                _ = ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+            }
+        }
+
+        private void AppBarButton_RightTapped_1(object sender, RightTappedRoutedEventArgs e)
+        {
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+        private void AppBarButton_DragTapped_1(object sender, PointerRoutedEventArgs e)
+        {
+            if (e.Pointer.IsInContact)
+            {
+                FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+            }
+        }
+
         private void AppBarButton_RightTapped_2(object sender, RightTappedRoutedEventArgs e)
         { 
             DRAW.ResizePanel();
         }
-
-        private async void AppBarButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        private void AppBarButton_DragTapped_2(object sender, PointerRoutedEventArgs e)
         {
-            await ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync); 
-        }
-
-        private async void AppBarButton_RightTapped_1(object sender, RightTappedRoutedEventArgs e)
-        {
-            await ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
-        }
-
-        private async void OnDoubleTap(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            if (e.OriginalSource is Grid)
-                await ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+            if (e.Pointer.IsInContact)
+            {
+                DRAW.ResizePanel();
+            }
         }
 
 
         static Task a = Task.FromResult(0);
-        public static async Task<T> ShowDialog<T>(Func<IAsyncOperation<T>> aa) 
+        public static async Task<T> ShowDialog<T>(Func<IAsyncOperation<T>> aa)
         {
             var last = a;
             var next = a = new Task(() => { });
             await last;
-            var result = await aa(); 
+            var result = await aa();
             next.Start();
             return result;
         }

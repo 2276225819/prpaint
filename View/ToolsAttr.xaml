@@ -23,7 +23,7 @@
                     <GridViewItem Tapped="OnPenAttr2">-</GridViewItem>
                     <GridViewItem Tapped="OnPenAttr4">→</GridViewItem>
                 </StackPanel>
-                <Image Width="200" Height="100" Source="{Binding tmp}"></Image>
+                <Image Width="200" Height="100"  Loaded="Image_Loaded"></Image>
                 <TextBox x:Uid="p_t_name" Header="name" Text="{Binding Name,Mode=OneWay}" TextWrapping="Wrap" TextChanged="TextBox_TextChanged"  Margin="0,0,0,8"></TextBox>
                 <!--
                 <Slider Value="{Binding opacity,Mode=TwoWay}" x:Uid="p_t_opacity" Header="opacity" Maximum="1" Minimum="0.01" StepFrequency="0.01"></Slider>
@@ -127,7 +127,8 @@
                 <TextBlock Text="{Binding PointCount}"></TextBlock>
                 <Button Tapped="OnClipAttrCancel" x:Uid="p_t_clipdel" >qingkong</Button>
                 <Button Tapped="OnClipAttrCopy" x:Uid="p_t_copy">fuzhi</Button>
-                <Button Tapped="OnClipAttrPaste" x:Uid="p_t_paste">zhantie</Button> 
+                <Button Tapped="OnClipAttrPaste" x:Uid="p_t_paste">zhantie</Button>
+                <Button Tapped="OnClipAttrSS" x:Uid="p_t_paste2">Screenshots</Button>
                 <!-- <Button Tapped="OnClipAttrEnter">确认</Button>
                 <Button>copy</Button>
                 <Button>cut</Button>
@@ -152,7 +153,7 @@
                          ></TextBox>
                 <ComboBox Margin="0,5" x:Uid="p_t_fontfamily" x:Name="FontListBox"  HorizontalAlignment="Stretch" 
                           ItemsSource="{Binding Fonts,Mode=OneTime}" SelectedValue="{Binding FontName,Mode=TwoWay}" 
-                          SelectionChanged="FontListBox_SelectionChanged"  >
+                          SelectionChanged="FontListBox_SelectionChanged" >
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" FontFamily="{Binding}"></TextBlock>
@@ -161,7 +162,7 @@
                     <TextBlock Text="xxx"></TextBlock>
                 </ComboBox>
                 <Slider Margin="0,5" x:Uid="p_t_fontsize" Value="{Binding Size,Mode=TwoWay}" Minimum="1"  Maximum="500"
-                        ValueChanged="Slider_ValueChanged"
+                        ValueChanged="Slider_ValueChanged" LostFocus="TextBox_LostFocus"
                         ></Slider>
             </StackPanel>
         </ControlTemplate>
@@ -179,7 +180,7 @@
         </ControlTemplate>
         <ControlTemplate x:Name="PickAttr">
             <StackPanel>
-                <ToggleSwitch x:Uid="p_t_all_layer" Header="AllLayer" IsOn="{Binding PickAll,Mode=TwoWay}" ></ToggleSwitch>
+                <ToggleSwitch x:Uid="p_t_all_layer" Header="AllLayer" IsOn="{Binding PickAll,Mode=TwoWay}" Tapped="ToggleSwitch_Tapped" ></ToggleSwitch>
             </StackPanel>
         </ControlTemplate>
         

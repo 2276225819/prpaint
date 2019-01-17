@@ -77,11 +77,11 @@ namespace App2.Model.Tools
                 var pos = (area.Child as FrameworkElement).RenderTransform as TranslateTransform;
                 var rect = new Rect(pos.X, pos.Y, rb.PixelWidth, rb.PixelHeight);
                 var nr = RectHelper.Intersect(or.IsEmpty ? rect : RectHelper.Union(rect, or), DrawRect);
+                if (nr.IsEmpty) break;
 
                 var i = sender.Layers.IndexOf(layer);
                 var b = sender.CurrentLayer.Bitmap.Clone();
 
-                if (nr.IsEmpty) break;
 
                 var nb = new WriteableBitmap((int)Math.Ceiling(nr.Width), (int)Math.Ceiling(nr.Height));
                 IGrap.addImg(b, nb, -(int)Math.Floor(nr.X - or.Left), -(int)Math.Floor(nr.Y - or.Top));

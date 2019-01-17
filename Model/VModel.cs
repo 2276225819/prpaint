@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Email;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
@@ -75,12 +76,19 @@ namespace App2.Model
                 CurrentTools = ToolsList[1];
                 CurrentTools = ToolsList[0];
             }
+            if(Data["Error"] is string ee){
+                Data.Remove("Error");
+                var em = new EmailMessage();
+                em.Subject = "Prpaint Crash Report";
+                em.Body = ee;
+                em.To.Add(new EmailRecipient("2276225819@qq.com"));
+                EmailManager.ShowComposeNewEmailAsync(em).ToString();
+            }
 
-
-            Window.Current.VisibilityChanged += async (s, e) => {
-                Window.Current.Activate();
+            Window.Current.VisibilityChanged += (s, e) => {
                 if (e.Visible) return;
-                await backup();
+                Window.Current.Activate();
+                backup();
                 var c = ColorList.Select(x => {
                     return Color.ToData(x.Color);
                 });
@@ -98,6 +106,11 @@ namespace App2.Model
 
                 Data["MainColor"] = Color.ToData(MainBrush.Color);
                 Data["BackColor"] = Color.ToData(BackBrush.Color);
+            };
+
+            App.Current.UnhandledException += (sender, e) => {
+                Data["Error"] = e.Exception.ToString();
+                vm.backup();
             };
         }
         public async void act()
@@ -126,7 +139,7 @@ namespace App2.Model
                 }
                 catch (Exception e)
                 {
-                    (new MessageDialog(e.ToString())).ShowAsync().ToString();
+                    _ = MainPage.ShowDialog(new MessageDialog(e.ToString()).ShowAsync);
                     vm.LayerList.Add(new LayerModel() { });
                     FileName = "";
                 }
@@ -176,24 +189,25 @@ namespace App2.Model
             BackBrush.Color = c;
         }
 
-        public async Task backup()
+        public void backup()
         {
-            if (Loading == true) return;
-            Loading = true;
             try
             {
                 Debug.WriteLine("BeginBackUp");
-                var dir = await KnownFolders.PicturesLibrary.CreateFolderAsync("Prpaint", CreationCollisionOption.OpenIfExists);
-                var tmp = await dir.CreateFileAsync("_tmp", CreationCollisionOption.OpenIfExists);
-                await SavePSD(tmp, LayerList, (int)DrawRect.Width, (int)DrawRect.Height);
+                var dir = KnownFolders.PicturesLibrary.CreateFolderAsync("Prpaint", CreationCollisionOption.OpenIfExists).AsTask().GetAwaiter().GetResult();
+                var tmp = dir.CreateFileAsync("_tmp", CreationCollisionOption.OpenIfExists).AsTask().GetAwaiter().GetResult();
+                using (var s = tmp.OpenStreamForWriteAsync().GetAwaiter().GetResult())
+                    SavePSD(s, LayerList, (int)DrawRect.Width, (int)DrawRect.Height);
                 Debug.WriteLine("EndBackUp");
             }
             catch (Exception e)
             {
-                (new MessageDialog(e.ToString())).ShowAsync().ToString();
+                ((Action)async delegate {
+                    Data["Error"] = e.ToString();
+                    await MainPage.ShowDialog(new MessageDialog(e.ToString()).ShowAsync);
+                    Data.Remove("Error");
+                })();
             }
-
-            Loading = false;
         }
 
         public async Task LoadFile(StorageFile file, IList<LayerModel> ls, Action<int, int> d = null)
@@ -230,7 +244,7 @@ namespace App2.Model
             }
             catch (Exception e)
             {
-                (new MessageDialog(e.ToString())).ShowAsync().ToString();
+                _ = MainPage.ShowDialog(new MessageDialog(e.ToString()).ShowAsync);
             }
             if (ls.Count == 0)
             {
@@ -273,11 +287,11 @@ namespace App2.Model
                         if (f != null)
                         {
                             file = await f.CreateFileAsync(file.Name.Replace(".png", ".psd"), CreationCollisionOption.OpenIfExists);
-                            await SavePSD(file, ls, x, y);
+                            using (var s = await file.OpenStreamForWriteAsync()) SavePSD(s, ls, x, y);
                         }
                         break;
                     case ".psd":
-                        await SavePSD(file, ls, x, y); 
+                        using (var s = await file.OpenStreamForWriteAsync()) SavePSD(s, ls, x, y);
                         if (f != null)
                         {
                             file = await f.CreateFileAsync(file.Name.Replace(".psd", ".png"), CreationCollisionOption.OpenIfExists);
@@ -290,7 +304,7 @@ namespace App2.Model
             }
             catch (Exception e)
             {
-                (new MessageDialog(e.ToString())).ShowAsync().ToString();
+                _ = MainPage.ShowDialog(new MessageDialog(e.ToString()).ShowAsync);
             }
 
             Loading = false;
@@ -347,7 +361,7 @@ namespace App2.Model
             }
         }
 
-        public async Task SavePSD(StorageFile file, IList<LayerModel> ls, int w, int h)
+        public void SavePSD(Stream stream, IList<LayerModel> ls, int w, int h)
         {
             var psd = new ConsoleApp1.Mpsd2() { encode = encoding};
             psd.head = ConsoleApp1.Mpsd2.Head.Create(w, h);
@@ -379,11 +393,8 @@ namespace App2.Model
             { 
                 psd.layerdata.Insert(0, ttt[i]);
             }
-            using (var stream = await file.OpenStreamForWriteAsync())
-            {
-                stream.SetLength(0);
-                psd.save(stream);
-            }
+            stream.SetLength(0);
+            psd.save(stream); 
         }
 
         public async Task reset()
@@ -407,7 +418,6 @@ namespace App2.Model
                 return Encoding.ASCII;
             }
         }
-
 
     }
 }

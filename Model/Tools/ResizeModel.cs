@@ -31,7 +31,7 @@ namespace App2.Model.Tools
 
 
 
-        enum T { Move, Resize, Rotate, ResizeH, ResizeV, NULL };
+        enum T { Move, Resize, Rotate, ResizeH, ResizeV,Flip, NULL };
         T type;
 
         Point lp;
@@ -91,6 +91,16 @@ namespace App2.Model.Tools
                     com.ScaleY *= (_lnv / lnv); 
                     ch = true;
                     break;
+                case T.Flip:
+                    var w = 5;
+                    var np = args.Position;
+                    var xv = np.X < lp.X - w ? +1 : (lp.X + w < np.X ? -1 : 0);
+                    var yv = np.Y < lp.Y - w ? +1 : (lp.Y + w < np.Y ? -1 : 0);
+                    if(xv!=0)
+                    com.ScaleX = Math.Abs(com.ScaleX) * xv;
+                    if(yv!=0)
+                    com.ScaleY = Math.Abs(com.ScaleY) * yv;
+                    break;
                 default:
                     break;
             }
@@ -98,7 +108,7 @@ namespace App2.Model.Tools
         }
 
 
-        public override async void OnToolChange(IModel sender, bool state)
+        public override async void OnToolState(IModel sender, bool state)
         {
             var layer = sender.CurrentLayer;
             if ( !layer.IsEdit || !layer.IsShow)
@@ -167,7 +177,6 @@ namespace App2.Model.Tools
                 sender.ElemArea.Child = null;
 
                 if (!ch) return;
-                VModel.vm.Loading = true;
                 var vc = new CompositeTransform() {
                     Rotation = com.Rotation,
                     ScaleX = com.ScaleX,
@@ -179,18 +188,27 @@ namespace App2.Model.Tools
                 var or = orec;
                 var ob = obb;
                 layer.getRect(out Rect nr, out WriteableBitmap nb);
-                if (com.ScaleX != 1 || com.Rotation != 0)
+                if (com.ScaleX != 1 || com.ScaleY != 1 || com.Rotation != 0)
                 {
                     var elem = (FrameworkElement)((DrawPanel)sender).ITEMS.ContainerFromItem(layer);
+
+                    VModel.vm.Loading = true;
                     var b = await (elem).Render();
+                    VModel.vm.Loading = false;
 
                     var vr = vc.TransformBounds(nr);
                     nr = RectHelper.Intersect(DrawRect, vr);
-
-                    nb = new WriteableBitmap((int)nr.Width, (int)nr.Height);
-                    IGrap.addImg(b, nb, (int)(vr.X - nr.X), (int)(vr.Y - nr.Y));
-                    layer.setRect(nr, nb);
-
+                    if (nr.IsEmpty)
+                    {
+                        nb = null;
+                        layer.setRect(nr, nb);
+                    }
+                    else
+                    {
+                        nb = new WriteableBitmap((int)nr.Width, (int)nr.Height);
+                        IGrap.addImg(b, nb, (int)(vr.X - nr.X), (int)(vr.Y - nr.Y));
+                        layer.setRect(nr, nb);
+                    }
                     com.Rotation = 0;
                     com.ScaleX = 1;
                     com.ScaleY = 1;
@@ -204,7 +222,6 @@ namespace App2.Model.Tools
                         sender.Layers[i].setRect(or, ob);
                     }
                 });
-                VModel.vm.Loading = false;
             }
         }
 
@@ -276,17 +293,25 @@ namespace App2.Model.Tools
                     };
                 }));
 
-                //grid.Children.Add(New<Rectangle>(_ => {
-                //    _.Name = "左 重置";
-                //    _.VerticalAlignment = VerticalAlignment.Center;
-                //    _.HorizontalAlignment = HorizontalAlignment.Left;
-                //    _.PointerPressed += (s, e) => {
-                //        if (type != T.NULL) return;
-                //        type = T.Resize;
-                //        e.Handled = true;
-                //        Debug.WriteLine((s as FrameworkElement).Name);
-                //    };
-                //})); 
+                grid.Children.Add(Elem<Border>(_ => {
+                    _.Name = "左 翻转"; 
+                    _.Child = new Viewbox() {
+                        UseLayoutRounding = false,
+                        Child = new SymbolIcon() {
+                            UseLayoutRounding = false,
+                            Margin = new Thickness(5),
+                            Symbol = Symbol.Switch,
+                        }
+                    };
+                    _.VerticalAlignment = VerticalAlignment.Center;
+                    _.HorizontalAlignment = HorizontalAlignment.Left;
+                    _.PointerPressed += (s, e) => {
+                        if (type != T.NULL) return;
+                        type = T.Flip;
+                        //e.Handled = true;
+                        Debug.WriteLine((s as FrameworkElement).Name);
+                    };
+                })); 
                 grid.Children.Add(Elem<Border>(_ => {
                     _.Name = "上 旋转";
                     _.Child = new Viewbox() {
@@ -297,6 +322,7 @@ namespace App2.Model.Tools
                             Symbol = Symbol.RepeatAll,
                         }
                     };
+                    _.CornerRadius = new CornerRadius(100);
                     _.VerticalAlignment = VerticalAlignment.Top;
                     _.HorizontalAlignment = HorizontalAlignment.Center; 
                     _.PointerPressed += (s, e) => {
@@ -339,10 +365,18 @@ namespace App2.Model.Tools
                     switch (tcss)
                     {
                         case Border border when border.Child != null:
-                            border.Width = 1.5 * v;
-                            border.Height = 1.5 * v;
-                            border.Margin = new Thickness(-2 * v); 
-                            border.CornerRadius = new CornerRadius(100);
+                            if (border.HorizontalAlignment == HorizontalAlignment.Center)
+                            {
+                                border.Width = 1.5 * v;
+                                border.Height = 1.5 * v;
+                                border.Margin = new Thickness(-2 * v); 
+                            }
+                            else
+                            {
+                                border.Width = 0.8 * v;
+                                border.Height = 0.8 * v; 
+                                border.Margin = new Thickness(-1 * v);
+                            }
                             border.BorderThickness = new Thickness(0.05 * v); 
                             border.Background = new SolidColorBrush() {
                                 Color = Colors.White

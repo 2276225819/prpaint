@@ -27,7 +27,7 @@
     <ListView  x:Name="A" ItemsSource="{x:Bind Items}" SelectionChanged="SelectionChanged" >
         <ListView.ItemTemplate>
             <DataTemplate x:DataType="model:LayerModel">
-                <Grid DoubleTapped="Grid_DoubleTapped">
+                <Grid><!--DoubleTapped="Grid_DoubleTapped">-->
                     <Grid.Resources>
                         <Style TargetType="Border">
                             <Setter Property="Margin" Value="4,0,4,4"></Setter> 

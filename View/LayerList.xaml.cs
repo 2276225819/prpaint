@@ -97,10 +97,10 @@ namespace App2.View
             CurrentLayer = CurrentLayer;//bug
         }
 
-        private async void Grid_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private void Grid_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             var model = (sender as FrameworkElement).DataContext as LayerModel;
-            var d = new ContentDialog() { PrimaryButtonText="Ok" , CloseButtonText="Cancel"  };
+            var d = new ContentDialog() { PrimaryButtonText = "Ok", SecondaryButtonText = "Cancel" };//旧手机加上会闪退, CloseButtonText="Cancel"  };
             var s = new StackPanel();
             var h = new TextBlock() { Text = "rename"  };
             var t = new TextBox() { Text = model.Name , AcceptsReturn = true ,};
@@ -109,9 +109,11 @@ namespace App2.View
             d.Content = s;
             d.PrimaryButtonClick += (ss, ee)=>{
                 model.Name = t.Text;
-            }; 
-
-            await MainPage.ShowDialog(d.ShowAsync);
+            };
+            d.SecondaryButtonClick += (ss, ee) => {
+                d.Hide();
+            };
+            _ = MainPage.ShowDialog(d.ShowAsync);
         }
     }
 }

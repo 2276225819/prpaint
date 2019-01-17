@@ -270,4 +270,7 @@
   <data name="p_t_all_layer.Header" xml:space="preserve">
     <value>AllLayers</value>
   </data>
+  <data name="p_t_paste2.Content" xml:space="preserve">
+    <value>FromScreenshots</value>
+  </data>
 </root>

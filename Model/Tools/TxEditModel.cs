@@ -15,10 +15,9 @@ using Windows.UI.Xaml.Media;
 namespace App2.Model.Tools
 {
     class TxEditModel : ToolsModel
-    { 
+    {
         /* 这双向绑定真的能用??? */
-        public string Text { get; set; } 
-
+        public string Text { get; set; }
 
         public List<string> Fonts { get; set; }
         public string FontName { get; set; }
@@ -34,9 +33,9 @@ namespace App2.Model.Tools
             FontName = Fonts[0];
             Size = 1;
         }
-        public override void OnToolChange(IModel sender, bool state)
+        public override void OnToolState(IModel sender, bool state)
         {
-            OnLayerChange(sender);
+            if (tmpModel == null) OnLayerChange(sender);
         }
 
         public override void OnLayerChange(IModel sender)
@@ -54,96 +53,114 @@ namespace App2.Model.Tools
             {
                 FontName = Fonts[0];
             }
-            Debug.Write("ChangeName");
+            Debug.Write("ChangeName"); 
+            OnDrawRollback(sender, null);
+            MainPage.flushtoolattr();
         }
+
         Point p;
         public override void OnDrawing(IModel sender, PointerPoint args)
         {
-            var e = sender.ElemArea.Child as TextBlock;
-            if (e == null) return; 
             var o = sender.CurrentLayer;
-            e.RenderTransform = new TranslateTransform() { X = o.X + args.Position.X - p.X, Y = o.Y + args.Position.Y - p.Y };
+            var e = GetArea(sender);
+            if (e != null) e.RenderTransform = new TranslateTransform() { X = o.X + args.Position.X - p.X, Y = o.Y + args.Position.Y - p.Y };
         }
 
         public override void OnDrawRollback(IModel sender, PointerPoint args)
         {
-            base.OnDrawRollback(sender, args);
-            sender.ElemArea.Child = null;
+            if (sender.ElemArea.Child != null)
+            {
+                sender.CurrentLayer.setRect(orect, obmp);
+                sender.CurrentLayer.Name = otxt;
+                sender.ElemArea.Child = null;
+            }
         }
 
         public override void OnDrawBegin(IModel sender, PointerPoint args)
         {
-            OnLayerChange(sender);
-            if (Text == null || Text.Length < 1)
-            {
-                return;
-            } 
-            base.OnDrawBegin(sender, args);
-            Clipper.Points.Clear();
-            sender.ElemArea.Child = Elem<TextBlock>(e => {
-                e.Text = Text;
-                e.FontFamily = new FontFamily(FontName);
-                e.Foreground = new SolidColorBrush() { Color = Color };
-                //e.HorizontalAlignment = HorizontalAlignment.Center;
-                //e.HorizontalTextAlignment = TextAlignment.Left;
-                //e.VerticalAlignment = VerticalAlignment.Center;
-                e.FontSize = Size;
-            });
             p = args.Position;
         }
 
         public override async void OnDrawCommit(IModel sender, PointerPoint args)
         {
-            base.OnDrawCommit(sender, args);
-            var area = sender.ElemArea as Border;
-            if (area.Child == null) return;
-
             VModel.vm.Loading = true;
-            await doing(sender, area.Child as FrameworkElement);
+            await Render(sender, GetArea(sender));
             VModel.vm.Loading = false;
-            sender.ElemArea.Child = null;
-
         }
 
-        async Task doing(IModel sender,FrameworkElement child)
+        async Task Render(IModel sender, FrameworkElement child)
         {
+            if (child == null) return;
             var rb = await child.Render();
             if (rb == null) return;
 
-            sender.CurrentLayer.getRect(out Rect or, out WriteableBitmap ob);
             var layer = sender.CurrentLayer;
             var pos = child.RenderTransform as TranslateTransform;
             var rect = new Rect(pos.X, pos.Y, rb.PixelWidth, rb.PixelHeight);
+            var or = orect;
             var nr = RectHelper.Intersect(rect, DrawRect);
             if (nr.IsEmpty) return;
 
             var i = sender.Layers.IndexOf(layer);
             var b = sender.CurrentLayer.Bitmap.Clone();
 
-            var otxt = sender.CurrentLayer.Name;
-            var ntxt = (child as TextBlock).Text + "\t" + Size + "\t" + FontName;
+            var nt = (child as TextBlock).Text + "\t" + Size + "\t" + FontName;
+            var ot = otxt;
 
             var nb = new WriteableBitmap((int)Math.Ceiling(nr.Width), (int)Math.Ceiling(nr.Height));
+            var ob = obmp;
             // IGrap.addImg(b, nb, -(int)Math.Floor(nr.X - or.Left), -(int)Math.Floor(nr.Y - or.Top));
             IGrap.addImg(rb, nb, -(int)Math.Floor(nr.X - rect.X), -(int)Math.Floor(nr.Y - rect.Y));
 
 
+            sender.ElemArea.Child = null;
             Exec.Do(new Exec() {
                 exec = () => {
                     sender.Layers[i].setRect(nr, nb);
-                    sender.Layers[i].Name = ntxt; ;
+                    sender.Layers[i].Name = nt;
+                    sender.CurrentLayer = sender.Layers[i];
                 },
                 undo = () => {
                     sender.Layers[i].setRect(or, ob);
-                    sender.Layers[i].Name = otxt;
+                    sender.Layers[i].Name = ot;
                     sender.CurrentLayer = sender.Layers[i];
                 }
             });
 
         }
+        Rect orect;
+        WriteableBitmap obmp;
+        string otxt;
+        TextBlock GetArea(IModel sender)
+        {
+            if (Text == null || Text.Length < 1)
+            {
+                return null;
+            }
+            if (sender.ElemArea.Child == null)
+            {
+                otxt = sender.CurrentLayer.Name;
+                sender.CurrentLayer.getRect(out orect, out obmp);
+                sender.CurrentLayer.Bitmap = null;
+                Clipper.Points.Clear();
+                var area = Elem<TextBlock>(e => {
+                    e.Text = Text;
+                    e.FontFamily = new FontFamily(FontName);
+                    e.FontSize = Size;
+                    e.Foreground = new SolidColorBrush() { Color = Color };
+                    //e.HorizontalAlignment = HorizontalAlignment.Center;
+                    //e.HorizontalTextAlignment = TextAlignment.Left;
+                    //e.VerticalAlignment = VerticalAlignment.Center;
+                    e.RenderTransform = new TranslateTransform() { X = sender.CurrentLayer.X, Y = sender.CurrentLayer.Y };
+                });
+                sender.ElemArea.Child = area;
+            }
+            return sender.ElemArea.Child as TextBlock;
+        }
+
 
         bool loc = false;
-        public async void OnReflush()
+        public async void OnReflush(bool render)
         {
             if (tmpModel?.CurrentLayer == null)
             {
@@ -154,24 +171,23 @@ namespace App2.Model.Tools
                 return;
             }
             loc = true;
-            await Task.Delay(20);//还没更新值
-            Debug.WriteLine("Text OnReflush");
+            await Task.Delay(50);//还没更新值 
 
-            Clipper.Points.Clear();
-            var area = Elem<TextBlock>(e => {
-                e.Text = Text;
-                e.FontFamily = new FontFamily(FontName);
-                e.Foreground = new SolidColorBrush() { Color = Color };
-                //e.HorizontalAlignment = HorizontalAlignment.Center;
-                //e.HorizontalTextAlignment = TextAlignment.Left;
-                //e.VerticalAlignment = VerticalAlignment.Center;
-                e.RenderTransform = new TranslateTransform() { X = tmpModel.CurrentLayer.X, Y = tmpModel.CurrentLayer.Y };
-                e.FontSize = Size;
-            });
-            tmpModel.ElemArea.Child = area;
-            await doing(tmpModel, area);
-            tmpModel.ElemArea.Child = null;
-
+            var area = GetArea(tmpModel);
+            if (render)
+            {
+                await Render(tmpModel, area);
+            }
+            else
+            {
+                if (area != null)
+                {
+                    area.Text = Text;
+                    area.FontFamily = new FontFamily(FontName);
+                    area.FontSize = Size;
+                    area.Foreground = new SolidColorBrush() { Color = Color };
+                }
+            }
             loc = false;
         }
     }

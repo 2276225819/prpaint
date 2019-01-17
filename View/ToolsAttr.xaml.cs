@@ -23,6 +23,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.Streams;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.UI.Popups;
 //https://go.microsoft.com/fwlink/?LinkId=234236 上介绍了“用户控件”项模板
 
 namespace App2.View
@@ -71,7 +72,7 @@ namespace App2.View
 
 
 
-        void SetSelected(ToolsModel e)
+        public void SetSelected(ToolsModel e)
         {
             Attr.Template = null;
             switch (e)
@@ -143,8 +144,8 @@ namespace App2.View
                 Items[Items.IndexOf(t)] = t;
             }
         }
-
         bool loc = false;
+        WriteableBitmap tmp = new WriteableBitmap(200, 100);
         private void sz_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (loc) return;
@@ -153,8 +154,7 @@ namespace App2.View
                 Debug.WriteLine("ATTR");
                 var t = CurrentTools as PenModel;
                 if (t != null)
-                { 
-                    var tmp = t.tmp;
+                {
                     var g = new Graphics(Color.Black, tmp);
                     var c = g.Color;
                     float s = t.size * (float)ScaleObj.Scale;
@@ -210,7 +210,39 @@ namespace App2.View
             }
             vm.Loading = false;
         }
+        private async void OnClipAttrSS(object sender, TappedRoutedEventArgs e)
+        {
+            var vm = VModel.vm;
+            vm.Loading = true;
+            var ls = new List<LayerModel>();
+            try
+            {
+                var dd = await KnownFolders.PicturesLibrary.GetFolderAsync("Screenshots");
+                var ff = await dd.GetFilesAsync(Windows.Storage.Search.CommonFileQuery.OrderByDate);
+                await vm.LoadFile(ff[0], ls); 
+            }
+            catch (Exception)
+            {
+                _ = MainPage.ShowDialog(new MessageDialog("nOimaGe").ShowAsync);
+            }
+            vm.Loading = false;
+            if (ls.Count != 1)
+            {
+                return;
+            }
 
+            Exec.Do(new Exec() {
+                exec = delegate {
+                    vm.LayerList.Insert(0, ls[0]);
+                    vm.CurrentLayer = vm.LayerList[0];
+                },
+                undo = delegate {
+                    vm.LayerList.RemoveAt(0);
+                }
+            });
+             
+            MainPage.Current.PivotIndex = 2;
+        }
         private async void OnClipAttrPaste(object sender, TappedRoutedEventArgs e)
         {
             var vm = VModel.vm;
@@ -252,22 +284,37 @@ namespace App2.View
           
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+            ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush(true);
         }
+
         private void FontListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if((sender as FrameworkElement).Parent != null)
             {
-                ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+                ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush(true);
             } 
         } 
         private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if ((sender as FrameworkElement).Parent != null)
             {
-                ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush();
+                ((sender as FrameworkElement)?.DataContext as TxEditModel)?.OnReflush(false);
             }
 
         }
+
+        private void Image_Loaded(object sender, RoutedEventArgs e)
+        {
+            var img = sender as Image;
+            img.Source = tmp;
+
+        }
+
+        private void ToggleSwitch_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            var ss = sender as PickerModel;
+            ss.OnToolState(DrawPanel.Current, false);
+        }
+
     }
 }

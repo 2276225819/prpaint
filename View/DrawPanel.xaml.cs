@@ -277,7 +277,7 @@ namespace App2.View
         void OnShow()
         {
             GRAPHIC.Visibility = Visibility.Visible;
-            OnChangeDraw?.Invoke(Scale);
+
             //CLIP.StrokeThickness = (1.0 / Scale) * 2;
             if (tsk)
             {
@@ -363,7 +363,8 @@ namespace App2.View
                     if (this.CurrentTouchCount == 0)
                     {
                         State = MyEnum.None;
-                        OnShow();
+                        OnShow(); 
+                        OnChangeDraw?.Invoke(Scale);
                     }
                     break;
                 case MyEnum.Stop:
@@ -371,6 +372,7 @@ namespace App2.View
                     {
                         State = MyEnum.None;
                         OnShow();
+                        OnChangeDraw?.Invoke(Scale);
                     }
                     else
                     if (e.Pointer.IsInContact && !drawable)

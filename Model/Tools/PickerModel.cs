@@ -25,15 +25,15 @@ namespace App2.Model.Tools
             DependencyProperty.Register("PickAll", typeof(bool), typeof(PickerModel), new PropertyMetadata(true));
 
 
-
-        public PickerModel() :base()
+        public PickerModel() : base()
         {
             Icon = "ms-appx:///Assets/AppBar/picker.png";
-            Name = "picker"; 
+            Name = "picker";
         }
         WriteableBitmap bmp;
-        public override void OnDrawBegin(IModel sender, PointerPoint args)
+        public override void OnToolState(IModel sender, bool args)
         {
+            Debug.WriteLine("picker");
             if (PickAll)
             {
                 bmp = new WriteableBitmap((int)DrawRect.Width, (int)DrawRect.Height);
@@ -47,10 +47,10 @@ namespace App2.Model.Tools
             {
                 bmp = new WriteableBitmap((int)DrawRect.Width, (int)DrawRect.Height);
                 var item = sender.CurrentLayer;
-                IGrap.addImg(item.Bitmap, bmp, (int)item.X, (int)item.Y, item.Opacity); 
+                IGrap.addImg(item.Bitmap, bmp, (int)item.X, (int)item.Y, item.Opacity);
             }
 
-        }
+        } 
 
         bool loc = false;
         public override void OnDrawing(IModel sender, PointerPoint args)

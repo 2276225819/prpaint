@@ -519,6 +519,14 @@ namespace LayerPaint
             }
 
         }
+        public static void clearImg(WriteableBitmap pwb)
+        {
+            Stream stream = pwb.PixelBuffer.AsStream();
+            byte[] b = new byte[pwb.PixelBuffer.Length];
+            stream.Write(b, 0, (int)b.Length); 
+            pwb.Invalidate();
+        }
+
         public static void fillColor(WriteableBitmap pwb, Func<int, int, Color> cb)
         {
             Stream stream = pwb.PixelBuffer.AsStream();

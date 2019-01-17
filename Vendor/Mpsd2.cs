@@ -21,9 +21,7 @@ namespace ConsoleApp1
         public short layer;
         public List<Layer> layerdata = new List<Layer>(); 
         public bool load(Stream s)
-        {
-            //try
-            //{
+        { 
             var r = new R() { encoding = encode } ;
             r.BaseStream = s;
             r.format(this);
@@ -31,18 +29,11 @@ namespace ConsoleApp1
             {
                 item.DecodeRaw(head.width, head.height);
             }
-            // }
-            // catch (Exception e)
-            // {
-            //     return false;
-            // }
             s.Dispose();
             return true;
         }
         public bool save(Stream s)
-        {
-            // try
-            // {
+        { 
             var w = new W() { encoding = encode };
             w.BaseStream = s;
             layer = (short)layerdata.Count;
@@ -51,11 +42,6 @@ namespace ConsoleApp1
             //    item.EncoRaw(head.width, head.height);
             //}
             w.format(this);
-            /// }
-            /// catch (Exception e)
-            /// {
-            ///     return false;
-            /// }
             s.Dispose();
             return true;
         }
@@ -144,7 +130,7 @@ namespace ConsoleApp1
                 l.clipping = 0;
                 l.Alpha = alpha;
                 l.flags = (byte)(0b1000 | (show ? 0b0 : 0b10) | (edit ? 0b0 : 0b1));
-                byte[] b = new byte[ln];
+                byte[] b = new byte[ln];//已预乘
                 s.Read(b, 0, (int)ln);
                 l.channel = 4;
                 for (short i = 0; i < 4; i++)
@@ -157,11 +143,11 @@ namespace ConsoleApp1
                 }
                 for (long i = 0, len = ln / 4; i < len; i++)
                 {
-                    float _a = 255.0f  / b[i * 4 + 3] ;
+                    double _a = b[i * 4 + 3] / 255.0;
                     l.channeldata[0].data[i] = b[i * 4 + 3];
-                    l.channeldata[1].data[i] = (byte)Math.Min(255,Math.Round(b[i * 4 + 2] * _a));
-                    l.channeldata[2].data[i] = (byte)Math.Min(255, Math.Round(b[i * 4 + 1] * _a));
-                    l.channeldata[3].data[i] = (byte)Math.Min(255,Math.Round(b[i * 4 + 0] * _a));
+                    l.channeldata[1].data[i] = (byte)Math.Round(b[i * 4 + 2] / _a);
+                    l.channeldata[2].data[i] = (byte)Math.Round(b[i * 4 + 1] / _a);
+                    l.channeldata[3].data[i] = (byte)Math.Round(b[i * 4 + 0] / _a);
                 }
                 return l;
             }
@@ -173,15 +159,11 @@ namespace ConsoleApp1
                     case 4:
                         for (int i = 0, l = w * h; i < l; i++)
                         {
-                            byte B = channeldata[3].data[i];
-                            byte G = channeldata[2].data[i];
-                            byte R = channeldata[1].data[i];
-                            byte A = channeldata[0].data[i];
-                            float max = (A) / 255f;
-                            b[i * 4 + 0] = (byte)(B * max);
-                            b[i * 4 + 1] = (byte)(G * max);
-                            b[i * 4 + 2] = (byte)(R * max);
-                            b[i * 4 + 3] = (byte)(A);
+                            double _a =  channeldata[0].data[i] / 255.0 ;
+                            b[i * 4 + 0] = (byte)Math.Round(channeldata[3].data[i] * _a);
+                            b[i * 4 + 1] = (byte)Math.Round(channeldata[2].data[i] * _a);
+                            b[i * 4 + 2] = (byte)Math.Round(channeldata[1].data[i] * _a);
+                            b[i * 4 + 3] = (byte)(channeldata[0].data[i]);
 
                         }
                         return b;

@@ -270,4 +270,7 @@
   <data name="p_t_all_layer.Header" xml:space="preserve">
     <value>所有图层</value>
   </data>
+  <data name="p_t_paste2.Content" xml:space="preserve">
+    <value>导入截图</value>
+  </data>
 </root>

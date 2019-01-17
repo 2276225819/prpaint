@@ -131,9 +131,9 @@ namespace App2.View
             GLIST.SelectedIndex = -1;
         }
 
-        private async void OpenColor(object sender, PointerRoutedEventArgs e)
+        private void OpenColor(object sender, PointerRoutedEventArgs e)
         {
-            await MainPage.ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+            _ = MainPage.ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
         }
     }
 }

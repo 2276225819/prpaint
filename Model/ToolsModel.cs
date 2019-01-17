@@ -45,7 +45,7 @@ namespace App2.Model
             }
             if (state != value)
             {
-                OnToolChange(m, state = value);
+                OnToolState(m, state = value);
             }
 
         }
@@ -91,7 +91,7 @@ namespace App2.Model
         { 
         }
 
-        public virtual void OnToolChange(IModel sender,bool state)
+        public virtual void OnToolState(IModel sender,bool state)
         {
         }
 

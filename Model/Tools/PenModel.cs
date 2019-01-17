@@ -22,7 +22,6 @@ namespace App2.Model.Tools
 {
     class PenModel : ToolsModel
     {
-        public WriteableBitmap tmp { get; set; } = new WriteableBitmap(200, 100);
         public override string Icon { get; set; } = "ms-appx:///Assets/AppBar/edit.png";
 
         //static App2.G2018 gdi = new App2.G2018();
@@ -87,7 +86,7 @@ namespace App2.Model.Tools
                 + "|" + size_prs + "|" + density_prs + "|" + blend_prs;
         }
 
-        static WriteableBitmap obmp;
+        static WriteableBitmap obmp; 
         static bool merge;
         static Rect orec;
         static Rect rect;

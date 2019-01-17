@@ -74,7 +74,7 @@
                         <ScrollViewer>
                             <StackPanel Margin="25,0">
                                 <!--- -->
-                                <view:ToolsList x:Name="TOOLS"  Margin="0,0,0,0" 
+                                <view:ToolsList  Margin="0,0,0,0" 
                                                 Clipper="{x:Bind vm.Clipper}"
                                                 Items="{x:Bind vm.ToolsList}"  ></view:ToolsList>
 
@@ -135,7 +135,7 @@
                 </Grid>
             </SplitView.Pane>
         </SplitView>
-        <AppBar ClosedDisplayMode="Compact" IsSticky="True" Name="Cmd" DoubleTapped="OnDoubleTap"   >
+        <AppBar ClosedDisplayMode="Compact" IsSticky="True" Name="Cmd" >
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
                     <AppBarButton x:Uid="c_undo" Label="undo" Icon="Undo" Click="BarUndo_Tapped" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"   />
@@ -143,7 +143,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
                     <AppBarButton Label="{x:Bind vm.MainBrush.Color,Mode=OneWay,Converter={StaticResource cc}}" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"
-                              Tapped="{x:Bind vm.OnChangeColor}" RightTapped="AppBarButton_RightTapped" 
+                              Tapped="{x:Bind vm.OnChangeColor}" RightTapped="AppBarButton_RightTapped"  PointerExited="AppBarButton_DragTapped"
                                   >
                         <Grid Width="20" Height="20"  >
                             <Rectangle Width="16" Height="16" Fill="{x:Bind vm.BackBrush}" HorizontalAlignment="Left" VerticalAlignment="Top"></Rectangle>
@@ -151,7 +151,7 @@
                         </Grid>
                     </AppBarButton>
                     <AppBarButton Label="{x:Bind vm.CurrentTools.Name,Mode=OneWay}" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"
-                              Tapped="{x:Bind vm.OnChangeTools}" RightTapped="AppBarButton_RightTapped_1"  >
+                              Tapped="{x:Bind vm.OnChangeTools}" RightTapped="AppBarButton_RightTapped_1"  PointerExited="AppBarButton_DragTapped_1" >
                         <Grid Width="20" Height="20" >
                             <BitmapIcon  UriSource="{x:Bind vm.CurrentTools.Icon,Mode=OneWay}"  Width="40" Height="40"
                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-10"  />
@@ -162,9 +162,16 @@
                                 <BitmapIcon  UriSource="{x:Bind vm.LastTools.Icon,Mode=OneWay}" />
                             </Border>
                         </Grid>
+                        <FlyoutBase.AttachedFlyout>
+                            <Flyout Placement="Top" >
+                                <view:ToolsList  Margin="0,0,0,0" 
+                                                Clipper="{x:Bind vm.Clipper}"
+                                                Items="{x:Bind vm.ToolsList}"  ></view:ToolsList>
+                            </Flyout>
+                        </FlyoutBase.AttachedFlyout> 
                     </AppBarButton>
                     <AppBarButton  Label="flip" Icon="Switch" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"
-                                   Tapped="BarLayer_Tapped"  RightTapped="AppBarButton_RightTapped_2"></AppBarButton>
+                                   Tapped="BarLayer_Tapped"  RightTapped="AppBarButton_RightTapped_2"  PointerExited="AppBarButton_DragTapped_2"></AppBarButton>
 
                 </StackPanel>
             </Grid>
