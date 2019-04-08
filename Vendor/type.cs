@@ -173,12 +173,27 @@ namespace LayerPaint
 
         public static WriteableBitmap Create(string url)
         {
-            var file = StorageFile.GetFileFromApplicationUriAsync(new Uri(url)).GetAwaiter().GetResult();
-            var stream = file.OpenReadAsync().GetAwaiter().GetResult();
-            var b = new WriteableBitmap(1, 1);
-            b.SetSource(stream);
-            b.PixelBuffer.ToArray();////BUG
-            return b; 
+            try
+            { 
+                StorageFile file = null;
+                if (url.IndexOf("://") == -1)
+                {
+                    file = StorageFile.GetFileFromPathAsync(url).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    file = StorageFile.GetFileFromApplicationUriAsync(new Uri(url)).GetAwaiter().GetResult();
+                }
+                var stream = file.OpenReadAsync().GetAwaiter().GetResult();
+                var b = new WriteableBitmap(1, 1);
+                b.SetSource(stream);
+                b.PixelBuffer.ToArray();////BUG
+                return b;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         public static async Task<WriteableBitmap> CreateAsync(StorageFile file)

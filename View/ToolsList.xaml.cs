@@ -40,7 +40,7 @@ namespace App2.View
 
                 Extends.Add(new Model.Tools.BuckerModel());
                 Extends.Add(new Model.Tools.TxEditModel());
-                Extends.Add(new Model.Tools.FillModel());
+                Extends.Add(new Model.Tools.FillModel()); 
                 //Extends.Add(new ToolsModel() {
                 //    Icon = "ms-appx:///Assets/AppBar/bucker.png",
                 //    Name = "bucker",

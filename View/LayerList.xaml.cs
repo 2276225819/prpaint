@@ -113,7 +113,7 @@ namespace App2.View
             d.SecondaryButtonClick += (ss, ee) => {
                 d.Hide();
             };
-            _ = MainPage.ShowDialog(d.ShowAsync);
+            d.ShowMux();
         }
     }
 }

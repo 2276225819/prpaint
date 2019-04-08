@@ -15,7 +15,7 @@ namespace App2.Model.Tools
     {
 
         public EraserModel() : base()   { }
-        public EraserModel(string[] arr, out int i) : base(arr, out i)   { }
+        public EraserModel(string[] arr) : base(arr) { }
 
 
         public override string Icon { get; set; } = "ms-appx:///Assets/AppBar/eraser.png";

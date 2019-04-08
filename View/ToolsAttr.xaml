@@ -42,9 +42,10 @@
                                 <StackPanel Margin="10">
                                     <CheckBox x:Uid="p_t_sizeprs" Content="size prs" IsChecked="{Binding size_prs,Mode=TwoWay}"></CheckBox>
                                     <ComboBox x:Uid="p_t_range"  Header="range" HorizontalAlignment="Stretch" Margin="0,0,0,8"
-                                              SelectedValue="{Binding ElementName=sz,Path=Maximum,Mode=TwoWay}"> 
-                                        
+                                              SelectedValue="{Binding ElementName=sz,Path=Maximum,Mode=TwoWay}">
+
                                         <ComboBox.Items>
+                                            <x:Double>20</x:Double>
                                             <x:Double>50</x:Double>
                                             <x:Double>200</x:Double>
                                             <x:Double>500</x:Double>
@@ -77,7 +78,7 @@
                             <Flyout Placement="Left">
                                 <StackPanel Margin="10">
                                     <CheckBox x:Uid="p_t_densityprs" Content="dep" IsChecked="{Binding density_prs,Mode=TwoWay}"></CheckBox>
-                                    <Slider   x:Uid="p_t_densitymin" Header="mindep" Value="{Binding density_min,Mode=TwoWay}"  Maximum="1" Minimum="0.01"  StepFrequency="0.01" ></Slider> 
+                                    <Slider   x:Uid="p_t_densitymin" Header="mindep" Value="{Binding density_min,Mode=TwoWay}"  Maximum="1" Minimum="0.01"  StepFrequency="0.01" ></Slider>
                                 </StackPanel>
                             </Flyout>
                         </Button.Flyout>
@@ -103,8 +104,8 @@
                                 <StackPanel Margin="10">
                                     <CheckBox x:Uid="p_t_blendprs" Content="blend" IsChecked="{Binding blend_prs,Mode=TwoWay}"></CheckBox>
                                     <Slider   x:Uid="p_t_blendmin" Header="minblend" Value="{Binding blend_min,Mode=TwoWay}"  Maximum="1" Minimum="0.01"  StepFrequency="0.01" ></Slider>
-                                
-                                <Slider x:Uid="p_t_blenddilution" Value="{Binding dilution,Mode=TwoWay}"  Header="dilution" 
+
+                                    <Slider x:Uid="p_t_blenddilution" Value="{Binding dilution,Mode=TwoWay}"  Header="dilution" 
                                         Maximum="1" Minimum="0"  StepFrequency="0.01"  ></Slider>
                                 </StackPanel>
                             </Flyout>
@@ -116,6 +117,160 @@
 
             </StackPanel>
         </ControlTemplate>
+
+        <ControlTemplate x:Name="Pen9Attr">
+            <StackPanel>
+                <StackPanel.Resources>
+                    <Style TargetType="Button" >
+                        <Setter Property="Padding" Value="4"></Setter>
+                        <Setter Property="HorizontalAlignment" Value="Right"></Setter>
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel Orientation="Horizontal">
+                    <GridViewItem Tapped="OnPenAttr3">←</GridViewItem>
+                    <GridViewItem Tapped="OnPenAttr1">+</GridViewItem>
+                    <GridViewItem Tapped="OnPenAttr2">-</GridViewItem>
+                    <GridViewItem Tapped="OnPenAttr4">→</GridViewItem>
+                </StackPanel>
+                <TextBox x:Uid="p_t_name" Header="name" Text="{Binding Name,Mode=OneWay}" TextWrapping="Wrap" TextChanged="TextBox_TextChanged"  Margin="0,0,0,8"></TextBox>
+                <TextBlock x:Uid="p_t_shape2"  >shape</TextBlock>
+                <Button Padding="-1" >
+                    <Button.Flyout>
+                        <Flyout  Closed="sz_ValueChanged"> 
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0"  HorizontalAlignment="Center" VerticalAlignment="Center" x:Uid="p_t_texture2" >纹理</TextBlock>
+                                <TextBlock  Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" x:Uid="p_t_shape2" >图案</TextBlock>
+                                <Button Grid.Column="0"   Grid.Row ="0" HorizontalAlignment="Center">
+                                    <Image Height="60" Width="60" Loading="Image_Loaded_t"  />
+                                    <Button.Flyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Text="open file..." Click="MenuFlyoutItem_Click_t"></MenuFlyoutItem>
+                                            <MenuFlyoutItem Text="clear" Click="Button_Click_t"></MenuFlyoutItem>
+                                        </MenuFlyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <Button Grid.Column="1"    Grid.Row ="0" HorizontalAlignment="Center" >
+                                    <Image Height="60"  Width="60" Loading="Image_Loaded_s" />
+                                    <Button.Flyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Text="open file..." Click="MenuFlyoutItem_Click_s"></MenuFlyoutItem>
+                                            <MenuFlyoutItem Text="clear" Click="Button_Click_s"></MenuFlyoutItem>
+                                        </MenuFlyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </Grid>
+                        </Flyout>
+                    </Button.Flyout>
+                    <Image Width="200" Height="100"  VerticalAlignment="Stretch" Loaded="Image_Loaded" HorizontalAlignment="Center">
+                    </Image>
+                </Button>
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="38"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="1">
+                        <Button.Content>
+                            <SymbolIcon Symbol="Setting"></SymbolIcon>
+                        </Button.Content>
+                        <Button.Flyout>
+                            <Flyout Placement="Left" Closed="sz_ValueChanged">
+                                <StackPanel Margin="10" Width="180"  Height="320">
+                                    <!--出滚动条闪退bug Height="240" -->
+                                    <CheckBox x:Uid="p_t_sizeprs" Content="size prs" IsChecked="{Binding size_prs,Mode=TwoWay}"></CheckBox>
+                                    <CheckBox x:Uid="p_t_sizefade" Content="size fadein fadeout" IsChecked="{Binding size_fade,Mode=TwoWay}"></CheckBox>
+                                    <ComboBox x:Uid="p_t_range" Name="sr"  Header="range" HorizontalAlignment="Stretch" Margin="0,0,0,8"
+                                              SelectedValue="{Binding range,Mode=TwoWay}">
+                                        <ComboBox.Items>
+                                            <x:Double>20</x:Double>
+                                            <x:Double>50</x:Double>
+                                            <x:Double>200</x:Double>
+                                            <x:Double>500</x:Double>
+                                        </ComboBox.Items>
+                                    </ComboBox>
+                                    <Slider x:Uid="p_t_sizemin" Header="minsize" Value="{Binding size_min,Mode=TwoWay}"  Maximum="1" Minimum="0.01"  StepFrequency="0.01" ></Slider>
+
+                                    <Slider x:Uid="p_t_space" Value="{Binding space,Mode=TwoWay}"  Header="space" Maximum="4" Minimum="0.01"  StepFrequency="0.01"  ></Slider>
+
+
+                                    <Slider x:Uid="p_t_hard" Value="{Binding hard,Mode=TwoWay}"  Header="hard" Maximum="1" Minimum="0"  StepFrequency="0.01"  ></Slider>
+
+
+
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Slider x:Name="sz" Value="{Binding size,Mode=TwoWay}" x:Uid="p_t_size" Header="size" Minimum="1" 
+                            Maximum="{Binding ElementName=sr,Path=SelectedValue,Mode=TwoWay}"  ValueChanged="sz_ValueChanged"></Slider>
+                </Grid>
+
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="38"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="1">
+                        <Button.Content>
+                            <SymbolIcon Symbol="Setting"></SymbolIcon>
+                        </Button.Content>
+                        <Button.Flyout>
+                            <Flyout Placement="Left" Closed="sz_ValueChanged">
+                                <StackPanel Margin="10" Width="180"  Height="280">
+                                    <!--出滚动条闪退bug Height="240" -->
+                                    <CheckBox x:Uid="p_t_densityprs" Content="dep" IsChecked="{Binding density_prs,Mode=TwoWay}"></CheckBox>
+                                    <Slider   x:Uid="p_t_densitymin" Header="mindep" Value="{Binding density_min,Mode=TwoWay}"  Maximum="1" Minimum="0.01"  StepFrequency="0.01" ></Slider>
+
+
+                                    <Slider x:Uid="p_t_blend" Value="{Binding blend,Mode=TwoWay}"  Header="blend" Maximum="1" Minimum="0"  StepFrequency="0.01"  ></Slider>
+
+                                    <Slider x:Uid="p_t_blenddilution" Value="{Binding dilution,Mode=TwoWay}"  Header="dilution" Maximum="1" Minimum="0"  StepFrequency="0.01"  ></Slider>
+
+                                    <!--<Slider x:Uid="p_t_persistence" Value="{Binding persistence,Mode=TwoWay}"  Header="persistence" Maximum="50" Minimum="0"  StepFrequency="0.01"  ></Slider>-->
+
+
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Slider x:Uid="p_t_density" Value="{Binding density,Mode=TwoWay}" Header="density" Maximum="1" Minimum="0.01"  StepFrequency="0.01" 
+                            ValueChanged="sz_ValueChanged"></Slider>
+
+                </Grid>
+
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="38"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="1">
+                        <Button.Content>
+                            <SymbolIcon Symbol="Setting"></SymbolIcon>
+                        </Button.Content>
+                        <Button.Flyout>
+                            <Flyout Placement="Left" Closed="sz_ValueChanged">
+                                <StackPanel Margin="10"  Width="180"  Height="240">
+                                    <Slider x:Uid="p_t_randpos" Value="{Binding randpos,Mode=TwoWay}"  Header="random position" Maximum="{Binding ElementName=sr,Path=SelectedValue,Mode=TwoWay}"  Minimum="0"  StepFrequency="0.01"  ></Slider>
+
+                                    <Slider x:Uid="p_t_randsize" Value="{Binding randsize,Mode=TwoWay}"  Header="random size" Maximum="{Binding ElementName=sr,Path=SelectedValue,Mode=TwoWay}"  Minimum="0"  StepFrequency="0.01"  ></Slider>
+
+                                    <Slider x:Uid="p_t_randrota" Value="{Binding randrota,Mode=TwoWay}"  Header="random rotation" Maximum="2"  Minimum="0"  StepFrequency="1"  ></Slider>
+
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                    <Slider x:Uid="p_t_stabilizer" Header="stabilizer" Value="{Binding step,Mode=TwoWay}"  Maximum="16" Minimum="1"  StepFrequency="1" ></Slider>
+
+                </Grid>
+
+            </StackPanel>
+        </ControlTemplate>
+
         <ControlTemplate x:Name="ClipAttr">
             <StackPanel>
                 <StackPanel.Resources>
@@ -162,14 +317,15 @@
                     <TextBlock Text="xxx"></TextBlock>
                 </ComboBox>
                 <Slider Margin="0,5" x:Uid="p_t_fontsize" Value="{Binding Size,Mode=TwoWay}" Minimum="1"  Maximum="500"
-                        ValueChanged="Slider_ValueChanged" LostFocus="TextBox_LostFocus"
+                        ValueChanged="Slider_ValueChanged"
+                        LostFocus="TextBox_LostFocus"
                         ></Slider>
             </StackPanel>
         </ControlTemplate>
         <ControlTemplate x:Name="FillAttr">
             <StackPanel>
                 <ComboBox Header="xingzhuang" x:Uid="p_t_shape" SelectedValue="{Binding Type,Mode=TwoWay}" HorizontalAlignment="Stretch">
-                    <!--- <x:String>Line</x:String>-->
+                    <x:String>Line</x:String>
                     <x:String>Rectangle</x:String>
                     <x:String>Ellipse</x:String>
                     <x:String>Circle</x:String>
@@ -183,9 +339,9 @@
                 <ToggleSwitch x:Uid="p_t_all_layer" Header="AllLayer" IsOn="{Binding PickAll,Mode=TwoWay}" Tapped="ToggleSwitch_Tapped" ></ToggleSwitch>
             </StackPanel>
         </ControlTemplate>
-        
+
     </UserControl.Resources>
-    <ContentControl x:Name="Attr" Template="{StaticResource PickAttr}"    > 
+    <ContentControl x:Name="Attr" Template="{StaticResource TextAttr}"    >
         <!--    -->
         <Rectangle></Rectangle>
     </ContentControl>

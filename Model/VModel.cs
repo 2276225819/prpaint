@@ -10,11 +10,13 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Email;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -68,7 +70,7 @@ namespace App2.Model
             }
             if (ToolsList.Count < 2)
             {
-                ToolsList.Add(new Model.Tools.PenModel() { Name = "pen1", });
+                ToolsList.Add(new Model.Tools.Pen9Model() { Name = "pen1", });
                 ToolsList.Add(new Model.Tools.EraserModel() { Name = "eras", });
             }
             if (ToolsList.Count > 0)
@@ -139,7 +141,7 @@ namespace App2.Model
                 }
                 catch (Exception e)
                 {
-                    _ = MainPage.ShowDialog(new MessageDialog(e.ToString()).ShowAsync);
+                    new MessageDialog(e.ToString()).ShowMux();
                     vm.LayerList.Add(new LayerModel() { });
                     FileName = "";
                 }
@@ -202,11 +204,8 @@ namespace App2.Model
             }
             catch (Exception e)
             {
-                ((Action)async delegate {
-                    Data["Error"] = e.ToString();
-                    await MainPage.ShowDialog(new MessageDialog(e.ToString()).ShowAsync);
-                    Data.Remove("Error");
-                })();
+                Data["Error"] = e.ToString();
+                new MessageDialog(e.ToString()).ShowMux();
             }
         }
 
@@ -244,7 +243,7 @@ namespace App2.Model
             }
             catch (Exception e)
             {
-                _ = MainPage.ShowDialog(new MessageDialog(e.ToString()).ShowAsync);
+                new MessageDialog(e.ToString()).ShowMux();
             }
             if (ls.Count == 0)
             {
@@ -304,7 +303,7 @@ namespace App2.Model
             }
             catch (Exception e)
             {
-                _ = MainPage.ShowDialog(new MessageDialog(e.ToString()).ShowAsync);
+                new MessageDialog(e.ToString()).ShowMux();
             }
 
             Loading = false;
@@ -395,6 +394,85 @@ namespace App2.Model
             }
             stream.SetLength(0);
             psd.save(stream); 
+        }
+        public async Task Copy()
+        {
+            vm.Loading = true;
+            var ot = await Clipper.CopyImage(VModel.vm.CurrentLayer);
+            if (ot != null)
+            {
+                var stream = new InMemoryRandomAccessStream();
+                var d = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+                d.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Premultiplied,
+                    (uint)ot.PixelWidth, (uint)ot.PixelHeight, 96, 96,
+                    ot.PixelBuffer.ToArray());
+                await d.FlushAsync();
+
+                var ss = RandomAccessStreamReference.CreateFromStream(stream);
+                var dd = new DataPackage();
+                dd.SetBitmap(ss);
+                Clipboard.SetContent(dd);
+            }
+            vm.Loading = false;
+
+        }
+        public async Task Pasts()
+        {
+            vm.Loading = true;
+            DataPackageView con = Clipboard.GetContent();
+            if (con.Contains(StandardDataFormats.Bitmap))
+            {
+                var img = await con.GetBitmapAsync();
+                WriteableBitmap src = await Img.CreateAsync(img);
+                Exec.Do(new Exec() {
+                    exec = delegate {
+                        vm.LayerList.Insert(0, new LayerModel() {
+                            Bitmap = src
+                        });
+                        vm.CurrentLayer = vm.LayerList[0];
+                    },
+                    undo = delegate {
+                        vm.LayerList.RemoveAt(0);
+                        vm.CurrentLayer = vm.LayerList[0];
+                    }
+                });
+            }
+            else
+            {
+                await Task.Delay(500);
+            }
+            vm.Loading = false; 
+        }
+        public async Task PastsSS()
+        { 
+            vm.Loading = true;
+            var ls = new List<LayerModel>();
+            try
+            {
+                var dd = await KnownFolders.PicturesLibrary.GetFolderAsync("Screenshots");
+                var ff = await dd.GetFilesAsync(Windows.Storage.Search.CommonFileQuery.OrderByDate);
+                await vm.LoadFile(ff[0], ls);
+            }
+            catch (Exception)
+            {
+                new MessageDialog("nOimaGe").ShowMux();
+            }
+            vm.Loading = false;
+            if (ls.Count != 1)
+            {
+                return;
+            }
+
+            Exec.Do(new Exec() {
+                exec = delegate {
+                    vm.LayerList.Insert(0, ls[0]);
+                    vm.CurrentLayer = vm.LayerList[0];
+                },
+                undo = delegate {
+                    vm.LayerList.RemoveAt(0);
+                    vm.CurrentLayer = vm.LayerList[0];
+                }
+            });
         }
 
         public async Task reset()

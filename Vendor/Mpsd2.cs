@@ -475,6 +475,7 @@ namespace ConsoleApp1
                 D(1, ref len);
                 len = (byte)(((len / padding) + 1) * 4 - 1);
                 S(len, ref v);
+                v = v.Trim();
             }
 
             public override void D(int i, ref sbyte v, bool r = false) { var b = Read(1)[0]; v = (sbyte)(b > 127 ? b - 256 : b); }
@@ -582,6 +583,10 @@ namespace ConsoleApp1
                 if (v == null)
                     v = "";
                 var ss = encoding.GetBytes(v);
+                if (ss.Length > 254)
+                {
+                    ss=ss.Take(254).ToArray();
+                }
                 byte len = (byte)((( (byte)ss.Length / padding) + 1) * 4 - 1);
                 //v = v.PadRight(len);
                 D(1, ref len);

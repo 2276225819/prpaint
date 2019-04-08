@@ -34,7 +34,8 @@
 
 
 
-        <SplitView Name="SR" HorizontalAlignment="Right"  OpenPaneLength="240"  PanePlacement="Right" IsPaneOpen="{x:Bind Cmd.IsOpen,Mode=OneWay}" >
+        <SplitView Name="SR" HorizontalAlignment="Right"  OpenPaneLength="240"  PanePlacement="Right" 
+                   IsPaneOpen="{x:Bind Cmd.IsOpen,Mode=OneWay}" IsHitTestVisible="{x:Bind IsHit,Mode=OneWay}" >
             <SplitView.Pane>
                 <Pivot Name="PIVOT">
                     <!--   Margin="-24" Padding="24" 
@@ -95,7 +96,8 @@
                 </Pivot>
             </SplitView.Pane>
         </SplitView>
-        <SplitView Name="SL" HorizontalAlignment="Left" OpenPaneLength="60"  PanePlacement="Left" IsPaneOpen="{x:Bind Cmd.IsOpen,Mode=OneWay}" >
+        <SplitView Name="SL" HorizontalAlignment="Left" OpenPaneLength="60"  PanePlacement="Left"
+                   IsPaneOpen="{x:Bind Cmd.IsOpen,Mode=OneWay}" IsHitTestVisible="{x:Bind IsHit,Mode=OneWay}" >
             <SplitView.Pane>
                 <Grid Background="{x:Bind PIVOT.Background,Mode=OneWay}">
                     <ScrollViewer  HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
@@ -135,7 +137,7 @@
                 </Grid>
             </SplitView.Pane>
         </SplitView>
-        <AppBar ClosedDisplayMode="Compact" IsSticky="True" Name="Cmd" >
+        <AppBar ClosedDisplayMode="Compact" IsSticky="True" Name="Cmd" IsHitTestVisible="{x:Bind IsHit,Mode=OneWay}"  >
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
                     <AppBarButton x:Uid="c_undo" Label="undo" Icon="Undo" Click="BarUndo_Tapped" IsCompact="{x:Bind Cmd.IsOpen,Converter={StaticResource dd},Mode=OneWay}"   />

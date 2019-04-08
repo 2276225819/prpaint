@@ -22,13 +22,13 @@
            ManipulationMode="All" 
           PointerWheelChanged="ROOT_PointerWheelChanged" 
           PointerPressed="OnEnter"
-          PointerReleased="OnExited"  
+          PointerReleased="OnExited"
           PointerMoved="OnMoved"   
           ManipulationDelta="OnDragDraw" 
           >
         <!-- PointerCaptureLost="OnExited"-->
         <Canvas x:Name="CANVAS" > 
-
+            
             <ItemsControl x:Name="LAYS" ItemsSource="{x:Bind Layers,Mode=OneWay}"   >
                 <ItemsControl.RenderTransform>
                     <CompositeTransform></CompositeTransform>
@@ -77,7 +77,7 @@
 
             </ItemsControl>
             <Border x:Name="GRAPHIC" HorizontalAlignment="Left" VerticalAlignment="Top"  >
-
+ 
             </Border>
  
         </Canvas>

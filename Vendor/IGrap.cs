@@ -290,7 +290,7 @@ namespace LayerPaint
         }
         public static async Task copyImgAsync(WriteableBitmap win, WriteableBitmap wout, int offx, int offy)
         {
-            if (win == null) return;
+            if (win == null || wout == null) return;
             Stream si = win.PixelBuffer.AsStream();
             Stream so = wout.PixelBuffer.AsStream();
             int sw = win.PixelWidth;
@@ -356,7 +356,7 @@ namespace LayerPaint
         }
         public static void copyImg(WriteableBitmap win, WriteableBitmap wout, int offx, int offy)
         {
-            if (win == null) return;
+            if (win == null || wout==null) return;
             Stream I = win.PixelBuffer.AsStream();
             Stream O = wout.PixelBuffer.AsStream();
             fillEx(win, wout, offx, offy, (w4, i, o) => {
@@ -374,7 +374,7 @@ namespace LayerPaint
         }
         public static void addImg(WriteableBitmap win, WriteableBitmap wout, int offx, int offy, double opacity)
         {
-            if (win == null) return;
+            if (win == null || wout == null) return;
             byte[] bi = win.PixelBuffer.ToArray();
             byte[] bo = wout.PixelBuffer.ToArray();
             float[] cin = new float[4];
@@ -398,7 +398,7 @@ namespace LayerPaint
         }
         public static void delImg(WriteableBitmap win, WriteableBitmap wout, int offx, int offy)
         {
-            if (win == null) return;
+            if (win == null || wout == null) return;
             byte[] bi = win.PixelBuffer.ToArray();
             byte[] bo = wout.PixelBuffer.ToArray();
             float[] cin = new float[4];
@@ -418,7 +418,7 @@ namespace LayerPaint
 
         public static async Task addImgAsync(WriteableBitmap win, WriteableBitmap wout, int offx, int offy, double opacity)
         {
-            if (win == null) return;
+            if (win == null || wout == null) return;
             var si = win.PixelBuffer.AsStream();
             int sw = win.PixelWidth;
             int sh = win.PixelHeight;
@@ -538,7 +538,21 @@ namespace LayerPaint
             stream.Write(b, 0, (int)b.Length);//已经优化
             pwb.Invalidate();
         }
- 
+        public static async Task fillColorAsync(WriteableBitmap pwb, Func<int, int, Color> cb)
+        {
+            Stream stream = pwb.PixelBuffer.AsStream();
+            var bl = pwb.PixelBuffer.Length;
+            int i = 0, len = (int)(pwb.PixelHeight), slen = (int)(pwb.PixelWidth);
+            await Task.Run(() => {
+                byte[] b = new byte[bl];
+                for (int y = 0; y < len; y++)
+                    for (int x = 0; x < slen; x++, i += 4)
+                        cb(x, y).outBGRAByte(ref b, i);
+                stream.Write(b, 0, (int)b.Length);//已经优化
+            });
+            pwb.Invalidate();
+        }
+
         public void drawLine(Vec2 m, Vec2 p, float size, float hard, float opacity)
         {
             var v = new Vec2(-p.x + m.x, -p.y + m.y).Normalize();

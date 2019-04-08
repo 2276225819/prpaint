@@ -57,8 +57,8 @@ namespace LayerPaint
                 openPicker.FileTypeFilter.Add(".jpeg");
                 openPicker.FileTypeFilter.Add(".jpg");
                 openPicker.FileTypeFilter.Add(".png");
-                var file = await openPicker.PickSingleFileAsync();
-                if(file == null)
+                var file = await openPicker.PickSingleFileMux();
+                if (file == null)
                 {
                     return;
                 }

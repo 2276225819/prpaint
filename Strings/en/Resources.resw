@@ -273,4 +273,13 @@
   <data name="p_t_paste2.Content" xml:space="preserve">
     <value>FromScreenshots</value>
   </data>
+  <data name="p_t_shape2.Text" xml:space="preserve">
+    <value>Shape</value>
+  </data>
+  <data name="p_t_space.Header" xml:space="preserve">
+    <value>Spaceing</value>
+  </data>
+  <data name="p_t_texture2.Text" xml:space="preserve">
+    <value>Texture</value>
+  </data>
 </root>

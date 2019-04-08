@@ -54,14 +54,14 @@ namespace App2.Model
         {
 
         }
-        public ToolsModel(string[] arr, out int i)
-        {
-            i = 1;
-            Name = arr[i++];
-        }
+        //public ToolsModel(string[] arr, out int i)
+        //{
+        //    i = 1;
+        //    Name = arr[i++];
+        //}
         public virtual string ToData()
         {
-            return ToString().Substring(ToString().LastIndexOf('.')+1) + "|" + Name;
+            return ToString().Substring(ToString().LastIndexOf('.')+1);
         }
         public static ToolsModel Create(string s)
         {
@@ -69,10 +69,13 @@ namespace App2.Model
             switch (arr[0])
             {
                 case "PenModel":
-                    return new PenModel(arr, out var i1);
-                
+                    return new PenModel(arr);
+
+                case "Pen9Model":
+                    return new Pen9Model(arr);
+
                 case "EraserModel":
-                    return new EraserModel(arr, out var i2); 
+                    return new EraserModel(arr); 
             }
             return null;
         } 

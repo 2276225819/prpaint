@@ -31,6 +31,7 @@ using Windows.UI.Composition;
 using System.Numerics;
 using App1.View;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Popups;
 
 namespace App2
 {
@@ -72,8 +73,8 @@ namespace App2
         }
     }
     public sealed partial class MainPage : Page  
-    { 
-        public static MainPage Current => (Window.Current.Content as Frame).Content as MainPage;
+    {
+        public static MainPage Current;// => (Window.Current.Content as Frame).Content as MainPage;
         public static void flushtoolattr()
         {
             Current.DF.SetSelected(VModel.vm.CurrentTools);
@@ -91,8 +92,22 @@ namespace App2
             set => PIVOT.SelectedIndex = value;
         }
 
+
+        public bool IsHit
+        {
+            get { return (bool)GetValue(IsHitProperty); }
+            set { SetValue(IsHitProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsHit.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsHitProperty =
+            DependencyProperty.Register("IsHit", typeof(bool), typeof(MainPage), new PropertyMetadata(true));
+
+
+
         public MainPage()
         {
+            Current = this;
             //Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = "en";//test
             this.InitializeComponent();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
@@ -181,12 +196,12 @@ namespace App2
                DB.Background= Cmd.Background = PIVOT.Background =  new SolidColorBrush() { Color = color, Opacity = 0.9 };
             }
 
-            //phone
-            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-            {
-                StatusBar statusBar = StatusBar.GetForCurrentView();
-                statusBar.ForegroundColor = Colors.Black;
-            }
+            ////phone
+            //if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            //{
+            //    StatusBar statusBar = StatusBar.GetForCurrentView();
+            //    statusBar.ForegroundColor = Colors.Black;
+            //}
 
             //pc
             var t=ApplicationView.GetForCurrentView().TitleBar;
@@ -218,6 +233,26 @@ namespace App2
                Pin.Visibility = Visibility.Collapsed;
                Exit.Visibility = Visibility.Collapsed;
 #endif
+            KeyDown += async (s, e) => {
+                if (!DRAW.IsFocus || DRAW.State != View.DrawPanel.MyEnum.None)
+                {
+                    return;
+                }
+                if (!Window.Current.CoreWindow.GetKeyState(VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down))
+                {
+                    return;
+                }
+                vm.CurrentTools.OnToolState(DRAW, false);
+                switch (e.OriginalKey)
+                {
+                    case VirtualKey.C: await vm.Copy(); break;
+                    case VirtualKey.V: await vm.Pasts(); break;
+                    case VirtualKey.Z: Exec.Undo(); break;
+                    default: break;
+                }
+                await Task.Delay(10);
+                vm.CurrentTools.OnToolState(DRAW, true);
+            };
         }
 
 
@@ -225,7 +260,7 @@ namespace App2
 
         public void OnCreate(object sender, RoutedEventArgs e)
         {
-            _ = ShowDialog(new LayerPaint.NewFileDialog(vm).ShowAsync);//新画板
+            new LayerPaint.NewFileDialog(vm).ShowMux();//新画板
         }
         public async void OnSave(object sender, RoutedEventArgs e)
         {
@@ -243,7 +278,8 @@ namespace App2
             openPicker.FileTypeFilter.Add(".jpeg");
             openPicker.FileTypeFilter.Add(".jpg");
             openPicker.FileTypeFilter.Add(".png");
-            var files = await ShowDialog(openPicker.PickMultipleFilesAsync);
+            var files = await openPicker.PickMultipleFilesMux();
+            //var files = await ShowDialog(openPicker.PickMultipleFilesAsync);
 
             vm.Loading = true;
             List<LayerModel> ls = new List<LayerModel>();
@@ -278,7 +314,7 @@ namespace App2
             picker.FileTypeChoices.Add("jpg", new List<string>() { ".jpg" });
             picker.FileTypeChoices.Add("gif", new List<string>() { ".gif" });
             picker.FileTypeChoices.Add("png", new List<string>() { ".png" });
-            var file = await ShowDialog(picker.PickSaveFileAsync);
+            var file = await picker.PickSaveFileMux();
             if (file == null)
             {
                 return;
@@ -344,13 +380,13 @@ namespace App2
 
         private void AppBarButton_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            _ = ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+            new LayerPaint.ColorDialog(Model.VModel.vm).ShowMux();
         }
         private void AppBarButton_DragTapped(object sender, PointerRoutedEventArgs e)
         {
             if (e.Pointer.IsInContact)
             {
-                _ = ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+                new LayerPaint.ColorDialog(Model.VModel.vm).ShowMux();
             }
         }
 
@@ -376,18 +412,42 @@ namespace App2
             {
                 DRAW.ResizePanel();
             }
+        } 
+    }
+
+    static class T
+    {
+        static Task a = Task.FromResult(0);
+        static Task<T> aa<T>(Func<Task<T>> ff)
+        {
+            var c = new TaskCompletionSource<T>();
+            a.ContinueWith(x => {
+                _ = MainPage.Current.Dispatcher.RunIdleAsync(async xx => {
+                    c.SetResult(await ff());
+                });
+            });
+            return (a = c.Task) as Task<T>; 
         }
 
-
-        static Task a = Task.FromResult(0);
-        public static async Task<T> ShowDialog<T>(Func<IAsyncOperation<T>> aa)
+        public static void ShowMux(this MessageDialog s)
         {
-            var last = a;
-            var next = a = new Task(() => { });
-            await last;
-            var result = await aa();
-            next.Start();
-            return result;
+            aa(async () => await s.ShowAsync());
+        }
+        public static void ShowMux(this ContentDialog s)
+        {
+            aa(async () => await s.ShowAsync());
+        }
+        public static Task<StorageFile> PickSaveFileMux(this FileSavePicker s)
+        {
+            return aa(async () => await s.PickSaveFileAsync());
+        }
+        public static Task<StorageFile> PickSingleFileMux(this FileOpenPicker s)
+        {
+            return aa(async () => await s.PickSingleFileAsync());
+        }
+        public static Task<IReadOnlyList<StorageFile>> PickMultipleFilesMux(this FileOpenPicker s)
+        {
+            return aa(async () => await s.PickMultipleFilesAsync());
         }
     }
 }

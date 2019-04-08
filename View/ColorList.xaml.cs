@@ -133,7 +133,7 @@ namespace App2.View
 
         private void OpenColor(object sender, PointerRoutedEventArgs e)
         {
-            _ = MainPage.ShowDialog(new LayerPaint.ColorDialog(Model.VModel.vm).ShowAsync);
+            new LayerPaint.ColorDialog(Model.VModel.vm).ShowMux();
         }
     }
 }

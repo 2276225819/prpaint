@@ -91,12 +91,15 @@ namespace App2.View
                 var ca = ColorHelper.FromArgb(255, 200, 200, 200);
                 var cb = ColorHelper.FromArgb(255, 255, 255, 255);
                 WriteableBitmap bg = new WriteableBitmap((int)value.Width, (int)value.Height);
-                IGrap.fillColor(bg, (x, y) => {
-                    return ((x / ws + y / ws) % 2 == 0) ? ca : cb;
-                });
-                CANVAS.Background = new ImageBrush() { ImageSource = bg };
                 isrota = VModel.vm.DrawRotation;
                 ResizePanel();
+
+                ((Action)async delegate {
+                    await IGrap.fillColorAsync(bg, (x, y) => {
+                        return ((x / ws + y / ws) % 2 == 0) ? ca : cb;
+                    });
+                    CANVAS.Background = new ImageBrush() { ImageSource = bg };
+                })();
             }
         }
 
@@ -202,18 +205,23 @@ namespace App2.View
 
             }).ToString();
 
-            //BUG 丢指针后重置
+            //BUG 丢指针后重置 改之后一定要真机触摸屏测试
             //var check = false;
-            this.ManipulationCompleted += (s, e) => {
-                if (  State == MyEnum.Draw) return;
-                    Ev.Clear(); Debug.WriteLine("COMPLETE");
-                //check = true;
-                //await Task.Delay(300);
-                //if (State != MyEnum.Draw)
-                //{
-                //   
-                //}
-                //check = false;
+            ManipulationCompleted += (s, e) => {
+                if (State == MyEnum.Draw) return;
+                Ev.Clear();
+                Debug.WriteLine("COMPLETE"); 
+            };
+            PointerEntered += (s, e) => {
+                IsFocus = true;
+                Debug.WriteLine("FA");
+            };
+            PointerExited += (s, e) => {
+                IsFocus = false;
+                Debug.WriteLine("FB");
+                if (!e.Pointer.IsInContact) return;
+                OnExited(s, e);
+                Debug.WriteLine("FIXME");
             };
         }
 
@@ -221,8 +229,8 @@ namespace App2.View
         public int CurrentTouchCount { get { return Ev.Count; } }
         HashSet<object> Ev = new HashSet<object>();
         bool IsEraser = false;
-        //bool IsInContact = false;
-        public enum MyEnum { None, Draw, Move, Stop }
+        public bool IsFocus = false;
+        public enum MyEnum { None, Draw, Move, Move2, Stop }
         public MyEnum State = MyEnum.None;
         public double Prs;
         void OnEnter(object sender, PointerRoutedEventArgs e)
@@ -239,6 +247,7 @@ namespace App2.View
                     Debug.WriteLine("\nOnEnterBoooooooooom");
                 }
             }
+            e.Handled = true;
         }
         void OnExited(object sender, PointerRoutedEventArgs e)
         {
@@ -254,9 +263,19 @@ namespace App2.View
                     Debug.WriteLine("\nOnExitedBoooooooooom");
                 }
             }
+            e.Handled = true;
         }
 
         bool tsk = false;
+        void OnBegin()
+        {
+            MainPage.Current.IsHit = false;
+            if (isrota != VModel.vm.DrawRotation)
+            {
+                ResizePanel();
+                isrota = VModel.vm.DrawRotation;
+            }
+        }
         void OnHide()
         {
             GRAPHIC.Visibility = Visibility.Collapsed;
@@ -266,18 +285,10 @@ namespace App2.View
                 Appbar.IsOpen = false;
             }
         }
-        void OnBegin()
+        void OnEnd()
         {
-            if(isrota != VModel.vm.DrawRotation)
-            {
-                ResizePanel();
-                isrota = VModel.vm.DrawRotation;
-            }
-        }
-        void OnShow()
-        {
-            GRAPHIC.Visibility = Visibility.Visible;
-
+            MainPage.Current.IsHit = true;
+            GRAPHIC.Visibility = Visibility.Visible; 
             //CLIP.StrokeThickness = (1.0 / Scale) * 2;
             if (tsk)
             {
@@ -285,6 +296,7 @@ namespace App2.View
                 Appbar.IsOpen = true;
             }
         }
+        PointerPoint opos;
         void OnMoved(object sender, PointerRoutedEventArgs e)
         {
             if (CurrentLayer == null || !CurrentLayer.IsEdit || !CurrentLayer.IsShow)
@@ -303,23 +315,29 @@ namespace App2.View
                 case MyEnum.None:
                     if (pos.Properties.IsRightButtonPressed)
                     {
+                        State = MyEnum.Move2;
+                        break;
+                    }
+                    if (pos.Properties.IsRightButtonPressed)
+                    {
                         Appbar.IsOpen = !Appbar.IsOpen;
                         State = MyEnum.Stop;
-                        return;
+                        break;
                     }
                     if (pos.Properties.IsInverted != IsEraser)
                     {
                         IsEraser = pos.Properties.IsInverted;
                         OnChangeTools?.Invoke(sender, e);
-                        return;
+                        break;
                     }
                     if (drawable)
                     {
                         CurrentTools.OnDrawBegin(this, pos);
-                        CurrentTools.OnDrawing(this, pos);
+                        opos = pos;
+                        //CurrentTools.OnDrawing(this, pos);
                         State = MyEnum.Draw;
                         OnBegin();
-                        return;
+                        break;
                     }
                     if(DrawMode == PointerDeviceType.Pen && e.Pointer.PointerDeviceType != PointerDeviceType.Pen)
                     {
@@ -335,8 +353,12 @@ namespace App2.View
                 case MyEnum.Draw:
                     if (drawable)
                     {
-                        //i++;
-                        CurrentTools.OnDrawing(this, pos);
+                        //i++;//????? opos.Position!= pos.Position
+                        if (opos.Position != pos.Position)
+                        {
+                            CurrentTools.OnDrawing(this, pos); 
+                            opos = pos;
+                        }
                     }
                     else
                     {
@@ -344,7 +366,7 @@ namespace App2.View
                         {
                             CurrentTools.OnDrawCommit(this, pos);
                             State = MyEnum.None;
-                            OnShow();
+                            OnEnd();
                         }
                         else
                         {
@@ -363,15 +385,21 @@ namespace App2.View
                     if (this.CurrentTouchCount == 0)
                     {
                         State = MyEnum.None;
-                        OnShow(); 
+                        OnEnd(); 
                         OnChangeDraw?.Invoke(Scale);
+                    }
+                    break;
+                case MyEnum.Move2: 
+                    if (this.CurrentTouchCount == 0)
+                    {
+                        State = MyEnum.None;
                     }
                     break;
                 case MyEnum.Stop:
                     if (!e.Pointer.IsInContact)
                     {
                         State = MyEnum.None;
-                        OnShow();
+                        OnEnd();
                         OnChangeDraw?.Invoke(Scale);
                     }
                     else
@@ -383,6 +411,7 @@ namespace App2.View
                 default:
                     break;
             }
+            e.Handled = true;
         }
 
 
@@ -393,6 +422,7 @@ namespace App2.View
                 //if(this.DrawMode==PointerDeviceType.Mouse && e.PointerDeviceType == PointerDeviceType.Mouse && e.)break;
                 if (this.DrawMode == PointerDeviceType.Touch && this.CurrentTouchCount >= 2) break;
                 if (this.DrawMode == PointerDeviceType.Pen && e.PointerDeviceType != PointerDeviceType.Pen) break;
+                if (State== MyEnum.Move2) break;
                 return;
             }
             var d = e.Delta;

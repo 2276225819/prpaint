@@ -49,10 +49,13 @@ namespace App2.Model.Tools
         {
 
         }
-        public PenModel(string[] arr, out int i) : base(arr, out i)
+        public PenModel(string[] arr) 
         {
             try
             {
+                int i = 1;
+                Name = arr[i++];
+                 
                 size = Convert.ToInt32(arr[i++]);
                 hard = Convert.ToSingle(arr[i++]);
                 opacity = 1; i++;// Convert.ToSingle(arr[i++]);
@@ -75,11 +78,11 @@ namespace App2.Model.Tools
                 //兼容旧代码
             }
         }
-
+ 
 
         public override string ToData()
         {
-            return base.ToData()
+            return base.ToData() + "|" + Name
                 + "|" + size + "|" + hard + "|" + opacity + "|" + density
                 + "|" + range + "|" + blend + "|" + dilution
                 + "|" + size_min + "|" + density_min + "|" + blend_min

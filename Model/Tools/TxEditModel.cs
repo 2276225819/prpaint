@@ -35,7 +35,7 @@ namespace App2.Model.Tools
         }
         public override void OnToolState(IModel sender, bool state)
         {
-            if (tmpModel == null) OnLayerChange(sender);
+            if (tmpModel == null || state) OnLayerChange(sender);
         }
 
         public override void OnLayerChange(IModel sender)
@@ -68,6 +68,7 @@ namespace App2.Model.Tools
 
         public override void OnDrawRollback(IModel sender, PointerPoint args)
         {
+            ((FrameworkElement)((dynamic)sender).ITEMS).Opacity = 1;
             if (sender.ElemArea.Child != null)
             {
                 sender.CurrentLayer.setRect(orect, obmp);
@@ -79,10 +80,12 @@ namespace App2.Model.Tools
         public override void OnDrawBegin(IModel sender, PointerPoint args)
         {
             p = args.Position;
+            ((FrameworkElement)((dynamic)sender).ITEMS).Opacity = 0.5;
         }
 
         public override async void OnDrawCommit(IModel sender, PointerPoint args)
         {
+            ((FrameworkElement)((dynamic)sender).ITEMS).Opacity = 1;
             VModel.vm.Loading = true;
             await Render(sender, GetArea(sender));
             VModel.vm.Loading = false;
@@ -141,7 +144,7 @@ namespace App2.Model.Tools
             {
                 otxt = sender.CurrentLayer.Name;
                 sender.CurrentLayer.getRect(out orect, out obmp);
-                sender.CurrentLayer.Bitmap = null;
+                //sender.CurrentLayer.Bitmap = null;
                 Clipper.Points.Clear();
                 var area = Elem<TextBlock>(e => {
                     e.Text = Text;

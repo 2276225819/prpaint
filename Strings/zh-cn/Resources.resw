@@ -273,4 +273,13 @@
   <data name="p_t_paste2.Content" xml:space="preserve">
     <value>导入截图</value>
   </data>
+  <data name="p_t_shape2.Text" xml:space="preserve">
+    <value>形状</value>
+  </data>
+  <data name="p_t_space.Header" xml:space="preserve">
+    <value>间隔</value>
+  </data>
+  <data name="p_t_texture2.Text" xml:space="preserve">
+    <value>纹理</value>
+  </data>
 </root>
