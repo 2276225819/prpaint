@@ -10,7 +10,7 @@
     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
 
-        <AppBarButton x:Name="ReSize" Icon="Refresh" VerticalAlignment="Center" BorderThickness="0,10,0,0" Margin="0,-80,-19.667,-45" HorizontalAlignment="Right"  />
+        <AppBarButton x:Name="ReSize" Icon="Refresh" VerticalAlignment="Bottom" Height="50"   HorizontalAlignment="Right" Margin="0,0,0,-28"  />
 
 
         <StackPanel Margin="0"   >

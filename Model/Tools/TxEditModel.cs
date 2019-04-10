@@ -133,7 +133,7 @@ namespace App2.Model.Tools
         }
         Rect orect;
         WriteableBitmap obmp;
-        string otxt;
+        string otxt="";
         TextBlock GetArea(IModel sender)
         {
             if (Text == null || Text.Length < 1)

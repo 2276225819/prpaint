@@ -475,7 +475,7 @@ namespace ConsoleApp1
                 D(1, ref len);
                 len = (byte)(((len / padding) + 1) * 4 - 1);
                 S(len, ref v);
-                v = v.Trim();
+                v = v.Trim(' ','\0');
             }
 
             public override void D(int i, ref sbyte v, bool r = false) { var b = Read(1)[0]; v = (sbyte)(b > 127 ? b - 256 : b); }

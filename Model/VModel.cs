@@ -2,6 +2,7 @@
 using App2.Model.Tools;
 using App2.View;
 using LayerPaint;
+//using Microsoft.Services.Store.Engagement;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -208,7 +209,16 @@ namespace App2.Model
                 new MessageDialog(e.ToString()).ShowMux();
             }
         }
-
+        //public async void checkLog(StorageFile file)
+        //{ 
+        //    var attr = await file.GetBasicPropertiesAsync();
+        //    var mb = attr.Size / 1024 / 1024;
+        //    if (mb < 100)  return;
+        //
+        //    var fmb = mb / 50 * 50;
+        //    StoreServicesCustomEventLogger logger = StoreServicesCustomEventLogger.GetDefault();
+        //    logger.Log($"Open{fmb}MB");
+        //}
         public async Task LoadFile(StorageFile file, IList<LayerModel> ls, Action<int, int> d = null)
         {
             await Dispatcher.RunIdleAsync(_ => { }); 
@@ -229,6 +239,7 @@ namespace App2.Model
                 {
                     case ".":
                     case ".psd":
+                        //checkLog(file);
                         await LoadPSD(file, ls, d);
                         break;
                     case ".png":

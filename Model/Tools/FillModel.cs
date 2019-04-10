@@ -37,13 +37,16 @@ namespace App2.Model.Tools
             Rect r = new Rect(op, args.Position);
             switch (sender.ElemArea.Child)
             {
-                //case Windows.UI.Xaml.Shapes.Line line:
-                //    line.RenderTransform = new TranslateTransform() { X = 110, Y = 110 };
-                //    line.X1 = op.X;
-                //    line.Y1 = op.Y;
-                //    line.X2 = args.Position.X;
-                //    line.Y2 = args.Position.Y;
-                //    break;
+                case Windows.UI.Xaml.Shapes.Line line:
+                    line.RenderTransform = new TranslateTransform() {
+                        X = r.Left - this.Size / 2.0,
+                        Y = r.Top - this.Size / 2.0
+                    };
+                    line.X1 = this.Size / 2.0 - r.Left + this.op.X;
+                    line.Y1 = this.Size / 2.0 - r.Top + this.op.Y;
+                    line.X2 = this.Size / 2.0 - r.Left + args.Position.X;
+                    line.Y2 = this.Size / 2.0 - r.Top + args.Position.Y;
+                    break;
                 case Windows.UI.Xaml.Shapes.Rectangle rect:
                     rect.RenderTransform = new TranslateTransform() { X = r.Left, Y = r.Top };
                     rect.Width = r.Right - r.Left;
@@ -73,12 +76,13 @@ namespace App2.Model.Tools
             op.Y = args.Position.Y;
             switch (Type)
             {
-                //case "Line":
-                //    sender.ElemArea.Child = Elem<Windows.UI.Xaml.Shapes.Line>(e => {
-                //        e.Stroke = new SolidColorBrush(Color);
-                //        e.StrokeThickness = Size; 
-                //    });
-                //    break;
+                case "Line":
+                    sender.ElemArea.Child = Elem<Windows.UI.Xaml.Shapes.Line>(e => {
+                        e.Stroke = new SolidColorBrush(Color);
+                        e.StrokeThickness = Size;
+                        e.StrokeStartLineCap = e.StrokeEndLineCap = PenLineCap.Round;
+                    });
+                    break;
                 case "Rectangle":
                     sender.ElemArea.Child = Elem<Windows.UI.Xaml.Shapes.Rectangle>(e => {
                         e.Stroke = new SolidColorBrush(Color);

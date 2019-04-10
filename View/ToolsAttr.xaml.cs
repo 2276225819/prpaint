@@ -126,7 +126,7 @@ namespace App2.View
                 };
             }));
             a.Items.Add(Elem<MenuFlyoutItem>(x => {
-                x.Text = "pen";
+                x.Text = "pencil";
                 x.Click += (ss, ee) => {
                     var t = (sender as FrameworkElement).DataContext as ToolsModel;
                     Items.Insert(Math.Max(0, Items.IndexOf(t)), new Pen9Model { Name = "pencil" });
@@ -154,7 +154,8 @@ namespace App2.View
                     Items.Insert(Math.Max(0, Items.IndexOf(t)), new Pen9Model {
                         Name = "bristle",
                         size = 16,
-                        randsize = 5,
+                        randpos = 8,
+                        randsize = 16,
                         randrota = 2,
                         space = 0.15f,
                         size_fade = false,
@@ -167,7 +168,7 @@ namespace App2.View
                 x.Click += (ss, ee) => {
                     var t = (sender as FrameworkElement).DataContext as ToolsModel;
                     Items.Insert(Math.Max(0, Items.IndexOf(t)), new Pen9Model {
-                        Name = "bristle",
+                        Name = "water color",
                         size_fade=false,
                         size_prs=false,
                         density_prs=true, 

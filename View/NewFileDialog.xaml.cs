@@ -19,8 +19,31 @@ namespace LayerPaint
 {
     public sealed partial class NewFileDialog : ContentDialog
     {
-        public string W { get; set; }
-        public string H { get; set; }
+
+
+        public string H
+        {
+            get { return (string)GetValue(HProperty); }
+            set { SetValue(HProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for H.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HProperty =
+            DependencyProperty.Register("H", typeof(string), typeof(NewFileDialog), new PropertyMetadata(""));
+
+
+
+        public string W
+        {
+            get { return (string)GetValue(WProperty); }
+            set { SetValue(WProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for W.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WProperty =
+            DependencyProperty.Register("W", typeof(string), typeof(NewFileDialog), new PropertyMetadata(""));
+
+
 
 
         public NewFileDialog(VModel d)
@@ -47,6 +70,7 @@ namespace LayerPaint
             };
             //打开
             Open.Click += async (s, e) => {
+                Hide();
                 FileOpenPicker openPicker = new FileOpenPicker();
                 //openPicker.ContinuationData["new"] = true; 
                 openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
@@ -63,8 +87,6 @@ namespace LayerPaint
                     return;
                 }
 
-
-                Hide();
                 d.LayerList.Clear();
                 d.FileName = file.Path;
                 await d.LoadFile(file, d.LayerList, (w, h) => {
@@ -79,8 +101,8 @@ namespace LayerPaint
             };
             //重置
             ReSize.Click += (s, e) => {
-                W = Window.Current.Bounds.Width.ToString();
-                H = Window.Current.Bounds.Height.ToString();
+                W = Math.Floor( Window.Current.Bounds.Width).ToString();
+                H = Math.Floor( Window.Current.Bounds.Height).ToString();
             };
 
         } 

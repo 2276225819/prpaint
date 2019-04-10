@@ -184,6 +184,7 @@ namespace App2.Model.Tools
                 IGrap.addImg(bmp, layer.Bitmap, (int)Math.Round(pos.X), (int)Math.Round(pos.Y));
 
                 layer.Child = null;
+                cache = null;
             }
             if (merge || layer.Bitmap==null)
             {
