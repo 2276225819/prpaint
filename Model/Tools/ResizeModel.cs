@@ -126,16 +126,9 @@ namespace App2.Model.Tools
                 if (Clipper.IsCliping)
                 {
                     VModel.vm.Loading = true;
-                    //拷贝选区 
-                    var Bitmap = new WriteableBitmap((int)DrawRect.Width, (int)DrawRect.Height);
-                    IGrap.copyImg(obb, Bitmap, (int)orec.X, (int)orec.Y);
-                    layer.Child = Clipper.createPolygon(Bitmap);
-
-
+                    //拷贝选区
                     var p = (Point)layer.Child.Tag;
-                    var xb = await (layer.Child.Render());
-                    Clipper.Points.Clear();
-                    layer.Child = null;
+                    var xb = await Clipper.CopyImage(layer);
                     if (xb != null)
                     {
                         var i = sender.Layers.IndexOf(layer);

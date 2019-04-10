@@ -23,7 +23,10 @@ namespace App2.Model.Tools
 
         public override void OnDrawBegin(IModel sender, PointerPoint args)
         {
-            if (Clipper.IsCliping) Clipper.Points.Clear();//不支持
+            if (Clipper.IsCliping)
+            {
+                layer.Child = null;//不支持
+            }
             base.OnDrawBegin(sender, args);
         }
 

@@ -70,7 +70,7 @@ namespace App2.Model.Tools
                 layer.setRect(nrec, nbmp);//bug bug bug
                 await gdi.DrawBucker((int)p.X, (int)p.Y, mask.PixelBuffer.ToArray());
                 //await Task.Delay(1000);
-                layer.Child = Clipper.createPolygon(Bitmap);
+                layer.Child = Clipper.OnCreateArea(Bitmap);
                 var bmp = await layer.Child.Render();
                 var pos = (Point)layer.Child.Tag;
                 IGrap.addImg(bmp, nbmp, (int)Math.Round(pos.X), (int)Math.Round(pos.Y));

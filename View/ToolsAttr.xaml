@@ -279,7 +279,13 @@
                         <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
                     </Style>
                 </StackPanel.Resources>
-                <TextBlock Text="{Binding PointCount}"></TextBlock>
+                <ComboBox  Name="ctype"  Header="ctype" HorizontalAlignment="Stretch" Margin="0,0,0,8"
+                            SelectedValue="{Binding ClipType,Mode=TwoWay}">
+                    <ComboBox.Items>
+                        <x:string>rect</x:string>
+                        <x:string>free</x:string> 
+                    </ComboBox.Items>
+                </ComboBox> 
                 <Button Tapped="OnClipAttrCancel" x:Uid="p_t_clipdel" >qingkong</Button>
                 <Button Tapped="OnClipAttrCopy" x:Uid="p_t_copy">fuzhi</Button>
                 <Button Tapped="OnClipAttrPaste" x:Uid="p_t_paste">zhantie</Button>

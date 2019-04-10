@@ -108,7 +108,7 @@ namespace App2.Model.Tools
             if (Clipper.IsCliping)
             { 
                 var Bitmap = new WriteableBitmap((int)DrawRect.Width, (int)DrawRect.Height);
-                layer.Child = Clipper.createPolygon(Bitmap);
+                layer.Child = Clipper.OnCreateArea(Bitmap);
 
                 gdi.Init(Bitmap, this);
             }

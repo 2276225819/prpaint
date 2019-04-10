@@ -38,7 +38,7 @@ namespace App2.Model.Tools
                 var Bitmap = new WriteableBitmap((int)DrawRect.Width, (int)DrawRect.Height);
                 IGrap.copyImg(obb, Bitmap, (int)orec.X, (int)orec.Y);
 
-                layer.Child = Clipper.createPolygon(Bitmap);
+                layer.Child = Clipper.OnCreateArea(Bitmap);
 
                 o = (Point)layer.Child.Tag;
                 a = (Vec2)args.Position;
