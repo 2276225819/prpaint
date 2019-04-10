@@ -16,10 +16,11 @@ using Windows.Devices.Input;
 using App2.Model.Tools;
 using App2.View;
 using System.Diagnostics;
+using Windows.ApplicationModel.Resources;
 
 namespace App2.Model
 {
-    public class BaseModel : DependencyObject 
+    public class BaseModel : DependencyObject
     {
         public ObservableCollection<LayerModel> LayerList { get; set; } = new ObservableCollection<LayerModel>();
         public ObservableCollection<ToolsModel> ToolsList { get; set; } = new ObservableCollection<ToolsModel>();
@@ -28,7 +29,7 @@ namespace App2.Model
         public SolidColorBrush BackBrush { get; set; } = new SolidColorBrush(Colors.AliceBlue);
         public ClipModel Clipper { get; set; } = new ClipModel();
 
-         
+
         public ObservableCollection<LayerModel> Layers { get => LayerList; set => LayerList = value; }
         //public Windows.UI.Color MainColor
         //{
@@ -53,6 +54,13 @@ namespace App2.Model
         //    DependencyProperty.Register("BackColor", typeof(Windows.UI.Color), typeof(BaseModel), new PropertyMetadata(Windows.UI.Colors.Azure));
 
 
+        public string LANG(string s)
+        {
+            var res = ResourceLoader.GetForCurrentView();
+            ResourceLoader.GetForCurrentView();
+            var str = res.GetString(s); 
+            return str;
+        }
 
 
 
@@ -83,7 +91,7 @@ namespace App2.Model
         public LayerModel CurrentLayer
         {
             get { return (LayerModel)GetValue(CurrentLayerProperty); }
-            set { SetValue(CurrentLayerProperty, value); CurrentTools?.OnLayerChange(DrawPanel.Current);  }
+            set { SetValue(CurrentLayerProperty, value); CurrentTools?.OnLayerChange(DrawPanel.Current); }
         }
 
         // Using a DependencyProperty as the backing store for CurrentLayer.  This enables animation, styling, binding, etc...
@@ -103,7 +111,7 @@ namespace App2.Model
             DependencyProperty.Register("LastTools", typeof(ToolsModel), typeof(BaseModel), null);
 
 
-         
+
         public ToolsModel CurrentTools
         {
             get { return (ToolsModel)GetValue(CurrentToolsProperty); }
@@ -112,9 +120,9 @@ namespace App2.Model
                 if (value == null || CurrentTools == value) return;
                 //if (value.GetType() != typeof(ResizeModel)) 
                 LastTools = CurrentTools;
-                CurrentTools?.setState(DrawPanel.Current,false,CurrentLayer);
+                CurrentTools?.setState(DrawPanel.Current, false, CurrentLayer);
                 SetValue(CurrentToolsProperty, value);
-                CurrentTools?.setState(DrawPanel.Current,true,CurrentLayer);
+                CurrentTools?.setState(DrawPanel.Current, true, CurrentLayer);
             }
         }
 

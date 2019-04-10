@@ -47,6 +47,21 @@ namespace App2.Model.Tools
                     line.X2 = this.Size / 2.0 - r.Left + args.Position.X;
                     line.Y2 = this.Size / 2.0 - r.Top + args.Position.Y;
                     break;
+                case Windows.UI.Xaml.Shapes.Polygon pol:
+                    op.X = r.Left;
+                    op.Y = r.Top; 
+                    pol.RenderTransform = new TranslateTransform() {
+                        X = op.X - this.Size / 2.0,
+                        Y = op.Y - this.Size / 2.0
+                    };
+                    (pol.Tag as PointCollection).Add(args.Position);
+                    var np = new PointCollection();
+                    foreach (var item in pol.Tag as PointCollection)
+                    { 
+                        np.Add(new Point(item.X - op.X + this.Size / 2.0, item.Y - op.Y + this.Size / 2.0));
+                    }
+                    pol.Points = np;
+                    break;
                 case Windows.UI.Xaml.Shapes.Rectangle rect:
                     rect.RenderTransform = new TranslateTransform() { X = r.Left, Y = r.Top };
                     rect.Width = r.Right - r.Left;
@@ -90,6 +105,16 @@ namespace App2.Model.Tools
                         if (Fill) e.Fill = new SolidColorBrush(MainPage.Current.BackColor);
                     });
                     break;
+                case "Custom":
+                    sender.ElemArea.Child = Elem<Windows.UI.Xaml.Shapes.Polygon>(e => {
+                        e.StrokeLineJoin = PenLineJoin.Round;
+                        e.Stroke = new SolidColorBrush(Color);
+                        e.StrokeThickness = Size;
+                        if (Fill) e.Fill = new SolidColorBrush(MainPage.Current.BackColor);
+                        e.Tag = new PointCollection();
+
+                    });
+                    break;
                 case "Ellipse":
                 case "Circle":
                     sender.ElemArea.Child = Elem<Windows.UI.Xaml.Shapes.Ellipse>(e => {
@@ -98,8 +123,8 @@ namespace App2.Model.Tools
                         if (Fill) e.Fill = new SolidColorBrush(MainPage.Current.BackColor);
                     });
                     break;
-
             }
+            OnDrawing(sender, args);
         }
         public override async void OnDrawCommit(IModel sender, PointerPoint args)
         {
@@ -108,15 +133,16 @@ namespace App2.Model.Tools
             if (area.Child == null) return;
 
             VModel.vm.Loading = true;
-
             sender.CurrentLayer.getRect(out Rect or, out WriteableBitmap ob);
             var rb = await (area.Child as FrameworkElement).Render();
+            VModel.vm.Loading = false;
             if (rb != null)
             {
                 var layer = sender.CurrentLayer;
                 var pos = (area.Child as FrameworkElement).RenderTransform as TranslateTransform;
                 var rect = new Rect(pos.X, pos.Y, rb.PixelWidth, rb.PixelHeight);
                 var nr = RectHelper.Intersect(or.IsEmpty ? rect : RectHelper.Union(rect, or), DrawRect);
+                if (nr.IsEmpty) return;
                 var i = sender.Layers.IndexOf(layer);
                 var b = sender.CurrentLayer.Bitmap.Clone();
 
@@ -136,7 +162,6 @@ namespace App2.Model.Tools
                     }
                 });
             }
-            VModel.vm.Loading = false;
             sender.ElemArea.Child = null;
 
         }

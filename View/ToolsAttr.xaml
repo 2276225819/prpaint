@@ -329,6 +329,7 @@
                     <x:String>Rectangle</x:String>
                     <x:String>Ellipse</x:String>
                     <x:String>Circle</x:String>
+                    <x:String>Custom</x:String>
                 </ComboBox>
                 <Slider Margin="0,5" x:Uid="p_t_fontsize" Header="border" Value="{Binding Size,Mode=TwoWay}" Minimum="0"  Maximum="100"></Slider>
                 <ToggleSwitch x:Uid="p_t_fill" Header="fill" IsOn="{Binding Fill,Mode=TwoWay}" ></ToggleSwitch>

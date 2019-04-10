@@ -228,6 +228,12 @@ namespace App2
                     ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
                 }
                 DRAW.ResizePanel();
+            }; 
+            SizeChanged += (s, e) => { 
+                if (!DRAW.CheckMatrix())
+                {
+                    DRAW.ResizePanel(); 
+                } 
             };
 #if !DEBUG
                Pin.Visibility = Visibility.Collapsed;
@@ -429,13 +435,13 @@ namespace App2
             return (a = c.Task) as Task<T>; 
         }
 
-        public static void ShowMux(this MessageDialog s)
+        public static Task<IUICommand> ShowMux(this MessageDialog s)
         {
-            aa(async () => await s.ShowAsync());
+            return aa(async () => await s.ShowAsync());
         }
-        public static void ShowMux(this ContentDialog s)
+        public static Task<ContentDialogResult> ShowMux(this ContentDialog s)
         {
-            aa(async () => await s.ShowAsync());
+            return aa(async () => await s.ShowAsync());
         }
         public static Task<StorageFile> PickSaveFileMux(this FileSavePicker s)
         {
@@ -448,6 +454,27 @@ namespace App2
         public static Task<IReadOnlyList<StorageFile>> PickMultipleFilesMux(this FileOpenPicker s)
         {
             return aa(async () => await s.PickMultipleFilesAsync());
+        }
+    }
+    class DelayRun
+    {
+        int bb = 0;
+        public int delay = 300;
+        public void ck(Action f)
+        {
+            if (bb++ == 0) ((Action)async delegate {
+                while (true)
+                {
+                    await Task.Delay(delay);
+                    if (bb == 1)
+                    {
+                        f();
+                        bb = 0;
+                        return;
+                    }
+                    bb = 1;
+                }
+            })();
         }
     }
 }

@@ -282,4 +282,16 @@
   <data name="p_t_texture2.Text" xml:space="preserve">
     <value>Texture</value>
   </data>
+  <data name="_no" xml:space="preserve">
+    <value>no</value>
+  </data>
+  <data name="_save_old_file" xml:space="preserve">
+    <value>do you want to save this file?</value>
+  </data>
+  <data name="_yes" xml:space="preserve">
+    <value>yes</value>
+  </data>
+  <data name="_cancel" xml:space="preserve">
+    <value>cancel</value>
+  </data>
 </root>

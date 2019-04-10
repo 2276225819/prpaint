@@ -210,7 +210,7 @@ namespace ConsoleApp1
                 byte[] result = new byte[size];
                 int writePos = 0;
                 int readPos = 0;
-                while (readPos < data.Length)
+                while (readPos < data.Length-1)
                 {
                     int n = (sbyte)data[readPos++];
                     if (n > 0)

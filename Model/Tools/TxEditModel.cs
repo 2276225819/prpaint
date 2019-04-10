@@ -80,12 +80,12 @@ namespace App2.Model.Tools
         public override void OnDrawBegin(IModel sender, PointerPoint args)
         {
             p = args.Position;
-            ((FrameworkElement)((dynamic)sender).ITEMS).Opacity = 0.5;
+            ((FrameworkElement)((dynamic)tmpModel).ITEMS).Opacity = 0.5;
         }
 
         public override async void OnDrawCommit(IModel sender, PointerPoint args)
         {
-            ((FrameworkElement)((dynamic)sender).ITEMS).Opacity = 1;
+            ((FrameworkElement)((dynamic)tmpModel).ITEMS).Opacity = 1;
             VModel.vm.Loading = true;
             await Render(sender, GetArea(sender));
             VModel.vm.Loading = false;
@@ -165,6 +165,7 @@ namespace App2.Model.Tools
         bool loc = false;
         public async void OnReflush(bool render)
         {
+            if (!tmpModel.CurrentLayer.IsEdit) return;
             if (tmpModel?.CurrentLayer == null)
             {
                 return;
@@ -179,10 +180,12 @@ namespace App2.Model.Tools
             var area = GetArea(tmpModel);
             if (render)
             {
+                ((FrameworkElement)((dynamic)tmpModel).ITEMS).Opacity = 1;
                 await Render(tmpModel, area);
             }
             else
             {
+                ((FrameworkElement)((dynamic)tmpModel).ITEMS).Opacity = 0.5;
                 if (area != null)
                 {
                     area.Text = Text;

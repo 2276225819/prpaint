@@ -208,17 +208,26 @@ namespace App2.View
             //BUG 丢指针后重置 改之后一定要真机触摸屏测试
             //var check = false;
             ManipulationCompleted += (s, e) => {
-                if (State == MyEnum.Draw) return;
+                if (State == MyEnum.Draw || Ev.Count==0) return;
                 Ev.Clear();
-                Debug.WriteLine("COMPLETE"); 
+                Debug.WriteLine("COMPLETE BUG"); 
             };
             PointerEntered += (s, e) => {
                 IsFocus = true;
-                Debug.WriteLine("FA");
+                //Debug.WriteLine("FA");
             };
             PointerExited += (s, e) => {
+                if (e.OriginalSource is FrameworkElement r)
+                { 
+                    if (r.BaseUri == null)
+                    {
+                        Debug.WriteLine("BUG Exited");
+                        return; //bug
+                    }
+                }
+
                 IsFocus = false;
-                Debug.WriteLine("FB");
+                //Debug.WriteLine("FB");
                 if (!e.Pointer.IsInContact) return;
                 OnExited(s, e);
                 Debug.WriteLine("FIXME");
@@ -274,11 +283,6 @@ namespace App2.View
         {
             MainPage.Current.IsHit = false;
             GRAPHIC.Visibility = Visibility.Collapsed; 
-            if (isrota != VModel.vm.DrawRotation)
-            {
-                ResizePanel();
-                isrota = VModel.vm.DrawRotation;
-            }
         }
         void OnEnd()
         {
@@ -401,7 +405,12 @@ namespace App2.View
 
 
         void OnDragDraw(object sender, ManipulationDeltaRoutedEventArgs e)
-        { 
+        {
+            if (isrota != VModel.vm.DrawRotation)
+            {
+                ResizePanel();
+                isrota = VModel.vm.DrawRotation;
+            }
             while (true)//switch
             {
                 //if(this.DrawMode==PointerDeviceType.Mouse && e.PointerDeviceType == PointerDeviceType.Mouse && e.)break;
@@ -419,15 +428,20 @@ namespace App2.View
 
             t.Children.Add(new ScaleTransform() { ScaleX = d.Scale, ScaleY = d.Scale, CenterX = ROOT.ActualWidth / 2, CenterY = ROOT.ActualHeight / 2 });
             Scale *= d.Scale;
-            CANVAS.RenderTransform = new MatrixTransform() { Matrix = t.Value };
-           
+
+            if (!CheckMatrix(t.Value))
+            { 
+                if(Ev.Count==0)e.Complete();
+                return;
+            }
+            CANVAS.RenderTransform = new MatrixTransform() { Matrix = t.Value }; 
         }
 
 
 
         private void ROOT_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
-            var f = e.GetCurrentPoint(null); 
+            var f = e.GetCurrentPoint(null);
             var t = new CompositeTransform();
             if (e.KeyModifiers == Windows.System.VirtualKeyModifiers.Control)
             {
@@ -454,9 +468,28 @@ namespace App2.View
             var tg = new TransformGroup();
             tg.Children.Add(CANVAS.RenderTransform);
             tg.Children.Add(t);
+            if (!CheckMatrix(tg.Value))
+            {
+                return;
+            }
             CANVAS.RenderTransform = new MatrixTransform() { Matrix = tg.Value };
         }
 
+        public bool CheckMatrix(Matrix? m =null)
+        {
+            if (!m.HasValue) m = (CANVAS.RenderTransform as MatrixTransform).Matrix;
+            var ccc = new RectangleGeometry();
+            ccc.Rect = DrawRect;
+            ccc.Transform = new MatrixTransform() { Matrix = m.Value };
+            var size = DesiredSize;
+            var rect = new Rect(
+                size.Width * .1,
+                size.Height * .1, 
+                size.Width * .8, 
+                size.Height * .8
+            );
+            return !RectHelper.Intersect(ccc.Bounds,rect).IsEmpty;
+        }
          
     }
 }

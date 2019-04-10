@@ -189,7 +189,7 @@
 IsActive
         </ProgressBar>
         <Button Click="Button_Click" HorizontalAlignment="Center" Width="100" Height="100"></Button>-->
-        <Grid Visibility="{x:Bind vm.Loading,Mode=OneWay,Converter={StaticResource bb}}" Background="#33000000">
+        <Grid Visibility="{x:Bind vm.Loading,Mode=OneWay,Converter={StaticResource bb}}" Background="#0C000000">
             <ProgressRing IsActive="True" Width="60" Height="60"  />
         </Grid>
         <!--  <SymbolIcon Symbol="Highlight"   />-->

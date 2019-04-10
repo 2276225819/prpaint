@@ -282,4 +282,16 @@
   <data name="p_t_texture2.Text" xml:space="preserve">
     <value>纹理</value>
   </data>
+  <data name="_no" xml:space="preserve">
+    <value>否</value>
+  </data>
+  <data name="_save_old_file" xml:space="preserve">
+    <value>保存当前文件?</value>
+  </data>
+  <data name="_yes" xml:space="preserve">
+    <value>是</value>
+  </data>
+  <data name="_cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
 </root>

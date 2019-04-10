@@ -163,11 +163,6 @@ namespace App2.Model.Tools
         }
         public override async void OnDrawCommit(IModel sender, PointerPoint args)
         {
-            if (rect.IsEmpty)
-            {
-                OnDrawRollback(sender, args);
-                return;
-            }
             t.Wait();
             gdi.DrawEnd(true);
             gdi.Invalidate(); 
@@ -191,6 +186,11 @@ namespace App2.Model.Tools
                 var or = orec;
                 var ob = obmp;
                 var nr = RectHelper.Intersect(RectHelper.Union(rect, orec), DrawRect);
+                if (nr.IsEmpty)
+                {
+                    OnDrawRollback(sender, args);
+                    return;
+                }
                 var i = sender.Layers.IndexOf(layer);
                 var nb = IGrap.clipImg(layer.Bitmap, nr);
                 Exec.Do(new Exec() {
@@ -207,6 +207,11 @@ namespace App2.Model.Tools
             {
                 var or = orec;
                 var nr = rect;
+                if (nr.IsEmpty || or.IsEmpty)
+                {
+                    OnDrawRollback(sender, args);
+                    return;
+                }
                 var nb = IGrap.clipImg(layer.Bitmap, nr);
 
                 layer.setRect(orec, obmp);

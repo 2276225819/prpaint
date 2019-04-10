@@ -2,7 +2,6 @@
 using App2.Model.Tools;
 using App2.View;
 using LayerPaint;
-//using Microsoft.Services.Store.Engagement;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -119,64 +118,132 @@ namespace App2.Model
         public async void act()
         {
             encoding = await GetLocalEncode();
-
-            StorageFile tmp = null;
-
-            if (vfn != null)
+            //新窗口? 打开tmp 
+            if (vm.LayerList.Count == 0)
             {
                 try
                 {
-                    vm.FileName = vfn;
-                    var uri = new Uri(vm.FileName, UriKind.RelativeOrAbsolute);
+                    Debug.WriteLine("------------open tmp----------------");
+                    var dir = await KnownFolders.PicturesLibrary.CreateFolderAsync("Prpaint", CreationCollisionOption.OpenIfExists);
+                    StorageFile tmp = await dir.GetFileAsync("_tmp");
+                    await vm.LoadFile(tmp, vm.LayerList, (x, y) => {
+                        vm.DrawRect = new Rect() { Width = x, Height = y };
+                        Exec.Clean();
+                    });
+                }
+                catch (Exception)
+                {
+                    if (FileName != "")
+                    {
+                        vfn = FileName; //tmp打开失败 尝试打开历史文件
+                    }
+                }
+            }
+            //打开新图片需要否需要保存tmp? 保存
+            if (vfn != null && vm.LayerList.Count != 0)
+            {
+                try
+                { 
+                    // // 手机不支持
+                    // var messageDialog = new MessageDialog(LANG("_save_old_file"),"Prpaint");
+                    // messageDialog.Commands.Add(new UICommand(LANG("_yes"), x=> { }, 1));
+                    // messageDialog.Commands.Add(new UICommand(LANG("_no"), x => { } ,2));
+                    // //messageDialog.Commands.Add(new UICommand(LANG("_cancel"), x => { }, 3));
+                    // messageDialog.DefaultCommandIndex = 1;
+                    // var res = await messageDialog.ShowMux();
+                    // switch (res.Id)
+                    // {
+                    //     case 1:
+                    //         var fname = await CurrentFile;
+                    //         await SaveFile(fname, LayerList, (int)DrawRect.Width, (int)DrawRect.Height);
+                    //         break;
+                    //     case 2:
+                    //         break;
+                    //     default:
+                    //         vfn = null;
+                    //         break;
+                    // }
+
+                    var md = new ContentDialog();
+                    md.Title = LANG("_save_old_file");
+                    md.Content = Elem<StackPanel>(s => {
+                        s.Orientation = Orientation.Horizontal;
+                        s.HorizontalAlignment = HorizontalAlignment.Right;
+                        s.Children.Add(Elem<Button>(b => {
+                            b.Content = LANG("_yes");
+                            b.Click += async (ss,ee) => {
+                                var fname = await CurrentFile;
+                                await SaveFile(fname, LayerList, (int)DrawRect.Width, (int)DrawRect.Height);
+                                md.Hide();
+                            };
+                        }));
+                        s.Children.Add(Elem<Button>(b => {
+                            b.Content = LANG("_no");
+                            b.Click += (ss, ee) => {
+                                md.Hide();
+                            };
+                        }));
+                        s.Children.Add(Elem<Button>(b => {
+                            b.Content = LANG("_cancel");
+                            b.Click += (ss, ee) => {
+                                vfn = null;
+                                md.Hide();
+                            };
+                        }));
+                    });
+                    await md.ShowMux();
+                    T Elem<T>(Action<T> cb) where T : DependencyObject, new()
+                    {
+                        var tcss = new T();
+                        cb(tcss);
+                        switch (tcss as FrameworkElement)
+                        {
+                            case Button btn:
+                                btn.Margin = new Thickness(5, 0, 5, 0);
+                                btn.Padding = new Thickness(15, 5, 15, 5);
+                                break; 
+                        }
+                        return tcss;
+                    }
+                }
+                catch (Exception e)
+                {
+                    _ = new MessageDialog(e.ToString()).ShowMux();
+                }
+            }
+            //需要打开图片? 继续打开
+            if (vfn != null)
+            { 
+                try
+                {
+                    StorageFile tmp; 
+                    var uri = new Uri(vfn, UriKind.RelativeOrAbsolute);
                     if (uri.IsAbsoluteUri)
                     {
-                        tmp = await StorageFile.GetFileFromPathAsync(vm.FileName);
+                        tmp = await StorageFile.GetFileFromPathAsync(vfn);
                         Debug.WriteLine("------------open abs----------------");
                     }
                     else
                     {
                         var dir = await KnownFolders.PicturesLibrary.CreateFolderAsync("Prpaint", CreationCollisionOption.OpenIfExists);
-                        tmp = await dir.GetFileAsync(vm.FileName);
+                        tmp = await dir.GetFileAsync(vfn);
                         Debug.WriteLine("------------open rel----------------");
                     }
+                    await vm.LoadFile(tmp, vm.LayerList, (x, y) => {
+                        vm.DrawRect = new Rect() { Width = x, Height = y };
+                        vm.LayerList.Clear();
+                        vm.FileName = vfn;
+                        Exec.Clean();
+                    });
                 }
                 catch (Exception e)
                 {
-                    new MessageDialog(e.ToString()).ShowMux();
-                    vm.LayerList.Add(new LayerModel() { });
-                    FileName = "";
+                    _ = new MessageDialog(e.ToString()).ShowMux();
                 }
             }
-            else
-            { 
-                try
-                {
-                    var dir = await KnownFolders.PicturesLibrary.CreateFolderAsync("Prpaint", CreationCollisionOption.OpenIfExists);
-                    tmp = await dir.GetFileAsync("_tmp");
-                    Debug.WriteLine("------------open tmp----------------");
-                }
-                catch (Exception)
-                {
-                    vm.LayerList.Add(new LayerModel() { });
-                    FileName = "";
-                }
-            }
-            if (tmp != null)
+            if (vm.LayerList.Count == 0)
             {
-                vm.LayerList.Clear();
-                Exec.Clean();
-                await vm.LoadFile(tmp, vm.LayerList, (x, y) => {
-                    vm.DrawRect = new Rect() { Width = x, Height = y };
-                });
-                if (vm.LayerList.Count == 0)
-                {
-                    vm.LayerList.Add(new LayerModel() { });
-                }
-                // vm.LayerList.Add(new LayerModel() {
-                //     Bitmap = LayerPaint.Img.Create("ms-appx:///Assets/dh.jpg"),
-                //     X = -100,
-                //     Y = 300,
-                // });
+                vm.LayerList.Add(new LayerModel() { });
             }
             vm.CurrentLayer = vm.LayerList[0];
         }
@@ -216,7 +283,7 @@ namespace App2.Model
         //    if (mb < 100)  return;
         //
         //    var fmb = mb / 50 * 50;
-        //    StoreServicesCustomEventLogger logger = StoreServicesCustomEventLogger.GetDefault();
+        //    var logger = Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger.GetDefault();
         //    logger.Log($"Open{fmb}MB");
         //}
         public async Task LoadFile(StorageFile file, IList<LayerModel> ls, Action<int, int> d = null)
@@ -239,7 +306,6 @@ namespace App2.Model
                 {
                     case ".":
                     case ".psd":
-                        //checkLog(file);
                         await LoadPSD(file, ls, d);
                         break;
                     case ".png":
