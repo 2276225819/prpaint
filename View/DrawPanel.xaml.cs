@@ -266,35 +266,24 @@ namespace App2.View
             e.Handled = true;
         }
 
-        bool tsk = false;
-        void OnBegin()
+        void OnDraw()
         {
             MainPage.Current.IsHit = false;
+        }
+        void OnMove()
+        {
+            MainPage.Current.IsHit = false;
+            GRAPHIC.Visibility = Visibility.Collapsed; 
             if (isrota != VModel.vm.DrawRotation)
             {
                 ResizePanel();
                 isrota = VModel.vm.DrawRotation;
             }
         }
-        void OnHide()
-        {
-            GRAPHIC.Visibility = Visibility.Collapsed;
-            if (Appbar?.IsOpen == true)
-            {
-                tsk = true;
-                Appbar.IsOpen = false;
-            }
-        }
         void OnEnd()
         {
             MainPage.Current.IsHit = true;
             GRAPHIC.Visibility = Visibility.Visible; 
-            //CLIP.StrokeThickness = (1.0 / Scale) * 2;
-            if (tsk)
-            {
-                tsk = false;
-                Appbar.IsOpen = true;
-            }
         }
         PointerPoint opos;
         void OnMoved(object sender, PointerRoutedEventArgs e)
@@ -316,12 +305,7 @@ namespace App2.View
                     if (pos.Properties.IsRightButtonPressed)
                     {
                         State = MyEnum.Move2;
-                        break;
-                    }
-                    if (pos.Properties.IsRightButtonPressed)
-                    {
-                        Appbar.IsOpen = !Appbar.IsOpen;
-                        State = MyEnum.Stop;
+                        OnMove();
                         break;
                     }
                     if (pos.Properties.IsInverted != IsEraser)
@@ -336,17 +320,17 @@ namespace App2.View
                         opos = pos;
                         //CurrentTools.OnDrawing(this, pos);
                         State = MyEnum.Draw;
-                        OnBegin();
+                        OnDraw();
                         break;
                     }
-                    if(DrawMode == PointerDeviceType.Pen && e.Pointer.PointerDeviceType != PointerDeviceType.Pen)
-                    {
-                        OnBegin();//bug
-                    }
+                    // if(DrawMode == PointerDeviceType.Pen && e.Pointer.PointerDeviceType != PointerDeviceType.Pen)
+                    // {
+                    //     OnDraw();//bug
+                    // }
                     //if(DrawMode == PointerDeviceType.Pen && e.Pointer.PointerDeviceType != PointerDeviceType.Pen)
                     //{
                     //    State = MyEnum.Move; ;
-                    //    OnBegin();
+                    //    OnDraw();
                     //    OnShow();
                     //}
                     break;
@@ -372,7 +356,7 @@ namespace App2.View
                         {
                             CurrentTools.OnDrawRollback(this, pos);
                             State = MyEnum.Move;
-                            OnHide();
+                            OnMove();
                         }
                     }
                     break;
@@ -385,7 +369,7 @@ namespace App2.View
                     if (this.CurrentTouchCount == 0)
                     {
                         State = MyEnum.None;
-                        OnEnd(); 
+                        OnEnd();
                         OnChangeDraw?.Invoke(Scale);
                     }
                     break;
@@ -393,6 +377,7 @@ namespace App2.View
                     if (this.CurrentTouchCount == 0)
                     {
                         State = MyEnum.None;
+                        OnEnd();
                     }
                     break;
                 case MyEnum.Stop:
